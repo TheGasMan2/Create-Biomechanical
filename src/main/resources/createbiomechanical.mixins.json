@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "priority": 1100,
+  "package": "com.happysg.createbiomechanical.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "createbiomechanical.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "createbiomechanical:power_core"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "createbiomechanical:entities/cogolem"
+}

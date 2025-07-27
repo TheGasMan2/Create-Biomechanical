@@ -1,0 +1,259 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.Golem",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 5,
+        "visible_bounds_offset": [
+          0,
+          1.5,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "bone3",
+          "pivot": [
+            0,
+            16,
+            0
+          ]
+        },
+        {
+          "name": "Body",
+          "parent": "bone3",
+          "pivot": [
+            0,
+            14,
+            -1
+          ]
+        },
+        {
+          "name": "UpperBody",
+          "parent": "Body",
+          "pivot": [
+            0,
+            24.41667,
+            0.91667
+          ]
+        },
+        {
+          "name": "bone4",
+          "parent": "UpperBody",
+          "pivot": [
+            0,
+            32.41667,
+            7.91667
+          ]
+        },
+        {
+          "name": "LowerBody",
+          "parent": "Body",
+          "pivot": [
+            0,
+            17.25,
+            -0.5
+          ]
+        },
+        {
+          "name": "LeftArm",
+          "parent": "Body",
+          "pivot": [
+            14,
+            31.5,
+            -1
+          ],
+          "cubes": [
+            {
+              "origin": [
+                13,
+                16.5,
+                -4
+              ],
+              "size": [
+                4,
+                30,
+                6
+              ],
+              "uv": [
+                20,
+                0
+              ]
+            },
+            {
+              "origin": [
+                9,
+                29.5,
+                -3
+              ],
+              "size": [
+                10,
+                4,
+                4
+              ],
+              "uv": [
+                0,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "RightArm",
+          "parent": "Body",
+          "pivot": [
+            -14,
+            31.5,
+            -1
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -17,
+                16.5,
+                -4
+              ],
+              "size": [
+                4,
+                30,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -19,
+                29.5,
+                -3
+              ],
+              "size": [
+                10,
+                4,
+                4
+              ],
+              "uv": [
+                28,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Head",
+          "parent": "Body",
+          "pivot": [
+            0,
+            35.66667,
+            -4.66667
+          ]
+        },
+        {
+          "name": "Neck",
+          "parent": "Head",
+          "pivot": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "Head2",
+          "parent": "Head",
+          "pivot": [
+            0,
+            36.25,
+            -3
+          ]
+        },
+        {
+          "name": "head3",
+          "parent": "Head2",
+          "pivot": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "bone2",
+          "parent": "Head2",
+          "pivot": [
+            0,
+            37,
+            -7.5
+          ]
+        },
+        {
+          "name": "bone",
+          "parent": "Head2",
+          "pivot": [
+            0,
+            37,
+            1.5
+          ]
+        },
+        {
+          "name": "LeftLeg",
+          "parent": "bone3",
+          "pivot": [
+            6.5,
+            12.83333,
+            -0.5
+          ]
+        },
+        {
+          "name": "leg2",
+          "parent": "LeftLeg",
+          "pivot": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "Foot2",
+          "parent": "LeftLeg",
+          "pivot": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "RightLeg",
+          "parent": "bone3",
+          "pivot": [
+            -6.5,
+            12.83333,
+            -0.5
+          ]
+        },
+        {
+          "name": "Leg",
+          "parent": "RightLeg",
+          "pivot": [
+            -2,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "Foot",
+          "parent": "RightLeg",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

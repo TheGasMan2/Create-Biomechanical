@@ -1,0 +1,27 @@
+// 1.21.1	2025-11-07T16:49:22.1986776	Registrate Provider for biomechanical [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+862511ace84fede28c2c639efaaa48e5b167bd22 assets/biomechanical/blockstates/andesite_projector.json
+6568a6ed1929120af11c1ac068d89c0ba0fdb267 assets/biomechanical/blockstates/bionic_casing.json
+19c5f8d009bb95d1c7637859fcd0cf24647fa424 assets/biomechanical/blockstates/brass_projector.json
+229d7d9b0b46157a95ac222b3ccba230e86972f1 assets/biomechanical/blockstates/cogolem_head.json
+feba9b5b77f0c80ac3c60882cae4d98c6b228b9e assets/biomechanical/blockstates/power_core.json
+0ef1bf05f86fa8b2be0f2c01d62be3849bbafc4c assets/biomechanical/blockstates/station.json
+174d5fb22fbdae090e37e67f65b835ef111eea7f assets/biomechanical/lang/en_ud.json
+5929f1a292f3ff86e087e9ae7eddf11bf6963184 assets/biomechanical/lang/en_us.json
+9c2b1dae9f5d27f25628ccc8a356d8b07681f5c1 assets/biomechanical/models/item/andesite_projector.json
+c0b219f088f67579faa851e11a7e4c5d27c1ee1c assets/biomechanical/models/item/bionic_casing.json
+d707ee674ef84daaece6bd8fe79c3cc09e94cf2f assets/biomechanical/models/item/brass_projector.json
+00f73fcbf1d263c65b79bc3363a6ec2fff689972 assets/biomechanical/models/item/cogolem_head.json
+63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/biomechanical/models/item/cogolem_spawn_egg.json
+bc1781564759385abe6d829257f176d521668ad2 assets/biomechanical/models/item/electron_battery.json
+9f68b4c8ad791ec4789f829b9d644a818a583658 assets/biomechanical/models/item/incomplete_electron_battery.json
+857f621ea54ba91e6b6ffc8aad04d8341501fad9 assets/biomechanical/models/item/power_core.json
+6362466fec53a50521ad35e3473a1cb35a11f5c3 assets/biomechanical/models/item/station.json
+55579db76f43f590e6859db3da871e35715ffeba data/biomechanical/loot_table/blocks/andesite_projector.json
+5244257ce9259c2520d18bcaf49279911a7a2045 data/biomechanical/loot_table/blocks/bionic_casing.json
+473beb72284628f5045a4131c326c535e27340f7 data/biomechanical/loot_table/blocks/brass_projector.json
+8631eb21a9637015ad811da4a40961a448b25162 data/biomechanical/loot_table/blocks/cogolem_head.json
+e85203c8b56d20021cf3d291f733a4444f396b98 data/biomechanical/loot_table/blocks/power_core.json
+de4ce60b4d4c60eba62d6a50545c7397ab9d8271 data/biomechanical/loot_table/blocks/station.json
+15b87602c20ba165da4d407e8c4098110aceebeb data/biomechanical/loot_table/entities/cogolem.json
+bbf66f1ee5238cd7d6d4f48bfa796ec72b338fb3 data/minecraft/tags/block/mineable/axe.json
+bbf66f1ee5238cd7d6d4f48bfa796ec72b338fb3 data/minecraft/tags/block/mineable/pickaxe.json

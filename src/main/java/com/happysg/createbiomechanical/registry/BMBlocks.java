@@ -2,11 +2,11 @@ package com.happysg.createbiomechanical.registry;
 
 import com.happysg.createbiomechanical.Biomechanical;
 import com.happysg.createbiomechanical.content.station.StationBlock;
-import com.happysg.createbiomechanical.content.station.StationBlockItem;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
@@ -20,8 +20,8 @@ public class BMBlocks {
             .blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
-            .addLayer(() -> RenderType::cutoutMipped)
-            .item(StationBlockItem::new)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .item(BlockItem::new)
             .model(AssetLookup.customBlockItemModel("_", "item"))
             .build()
             .register();
@@ -32,7 +32,7 @@ public class BMBlocks {
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
             .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
-            .addLayer(() -> RenderType::cutoutMipped)
+            .addLayer(() -> RenderType::cutoutMipped) //TODO
             .simpleItem()
             .register();
 

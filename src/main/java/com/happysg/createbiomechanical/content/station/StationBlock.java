@@ -1,31 +1,137 @@
 package com.happysg.createbiomechanical.content.station;
 
 import com.happysg.createbiomechanical.registry.BMBlockEntityTypes;
-import com.happysg.createbiomechanical.registry.BMBlocks;
-import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
+import com.simibubi.create.content.kinetics.base.KineticBlock;
 import com.simibubi.create.foundation.block.IBE;
+import net.createmod.catnip.math.VoxelShaper;
+import net.liukrast.multipart.block.AbstractMultipartBlock;
+import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.NonnullDefault;
 
-public class StationBlock extends HorizontalKineticBlock implements IBE<StationBlockEntity> {
+import java.util.List;
+import java.util.stream.IntStream;
 
-    public static final EnumProperty<StationShape> SHAPE = EnumProperty.create("shape", StationShape.class);
+@NonnullDefault
+public class StationBlock extends KineticBlock implements IBE<StationBlockEntity>, IMultipartBlock {
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+
+    private final List<VoxelShaper> shapes = IntStream.range(0, 10)
+            .mapToObj(i -> VoxelShaper.forHorizontal(switch (i) {
+                case 0 -> Block.box(10, 0, 0, 16, 4, 16);
+                case 1, 7 -> Block.box(0, 0, 12, 16, 16, 16);
+                case 2 -> Block.box(10, 4, 3, 14, 12, 16);
+                case 3 -> Block.box(10, 4, 0, 14, 12, 16);
+                case 4 -> Shapes.empty();
+                case 6 -> Block.box(0, 0, 0, 6, 4, 16);
+                case 8 -> Block.box(2, 4, 3, 6, 12, 16);
+                case 9 -> Block.box(2, 4, 0, 6, 12, 16);
+                default -> Block.box(0, 0, 0, 16, 16, 16);
+            }, Direction.NORTH)).toList();
+    @Nullable
+    private List<BlockPos> positions;
+    @Nullable
+    private IntegerProperty property;
 
     public StationBlock(Properties properties) {
         super(properties);
-        registerDefaultState(defaultBlockState().setValue(SHAPE, StationShape.CENTER));
+        registerDefaultState(defaultBlockState().setValue(getPartsProperty(), 4));
+    }
+
+    @Override
+    public void defineParts(AbstractMultipartBlock.Builder builder) {
+        for(int x = 0; x < 3; x++)
+            for(int y = 0; y < 2; y++)
+                for(int z = 0; z < 2; z++)
+                    if(x != 1 || y != 1)
+                        builder.define(x,y,z);
+    }
+
+    /* MULTIPART IMPLEMENTATION */
+
+    @Override
+    public Direction getDirection(BlockState state) {
+        return state.getValue(FACING);
+    }
+
+    @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    /* MUTLIPART */
+
+    @Override
+    public @Nullable List<BlockPos> getPositions() {
+        return positions;
+    }
+
+    @Override
+    public void setPositions(List<BlockPos> positions) {
+        this.positions = positions;
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Override
+    public IntegerProperty getPartsProperty() {
+        return property;
+    }
+
+    @Override
+    public void setPartsProperty(IntegerProperty property) {
+        this.property = property;
+    }
+
+    @Override
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
+        IMultipartBlock.super.setPlacedBy(level, pos, state, placer, stack);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
+        IMultipartBlock.super.createBlockStateDefinition$multipart(builder);
+        builder.add(FACING);
+    }
+
+    @Override
+    public boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader level, @NotNull BlockPos pos) {
+        return IMultipartBlock.super.canSurvive(state, level, pos);
+    }
+
+    @Override
+    public void destroy(@NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state) {
+        IMultipartBlock.super.destroy(level, pos, state);
+    }
+
+    //TODO: UPDATE THIS
+    @Override
+    protected @NotNull BlockState mirror(@NotNull BlockState state, Mirror mirror) {
+        return rotate(state, mirror.getRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    protected @NotNull BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
@@ -35,113 +141,27 @@ public class StationBlock extends HorizontalKineticBlock implements IBE<StationB
         }
     }
 
-    @Override
-    public void onPlace(BlockState state, Level worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(state, worldIn, pos, oldState, isMoving);
-        if (state.getValue(SHAPE) != StationShape.CENTER) {
-            return;
-        }
-        Direction front = state.getValue(HORIZONTAL_FACING);
-        Direction left = state.getValue(HORIZONTAL_FACING).getClockWise();
-        Direction right = state.getValue(HORIZONTAL_FACING).getCounterClockWise();
-        BlockPos leftShaftPos = pos.relative(front).above().relative(left);
-        BlockPos rightShaftPos = pos.relative(front).above().relative(right);
-        BlockPos frontLeftPos = pos.relative(front).relative(left);
-        BlockPos frontCenterPos = pos.relative(front);
-        BlockPos frontRightPos = pos.relative(front).relative(right);
-        BlockPos backLeftPos = pos.relative(left);
-        BlockPos backRightPos = pos.relative(right);
-        BlockPos topBackLeftPos = pos.above().relative(left);
-        BlockPos topBackRightPos = pos.above().relative(right);
-        //todo better way to do this, define and move these offsets to StationShape
-        worldIn.setBlockAndUpdate(leftShaftPos, defaultBlockState().setValue(SHAPE, StationShape.TOP_FRONT_LEFT_SHAFT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, leftShaftPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(rightShaftPos, defaultBlockState().setValue(SHAPE, StationShape.TOP_FRONT_RIGHT_SHAFT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, rightShaftPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(frontLeftPos, defaultBlockState().setValue(SHAPE, StationShape.BOTTOM_FRONT_LEFT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, frontLeftPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(frontCenterPos, defaultBlockState().setValue(SHAPE, StationShape.FRONT_CENTER).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, frontCenterPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(frontRightPos, defaultBlockState().setValue(SHAPE, StationShape.BOTTOM_FRONT_RIGHT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, frontRightPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(backLeftPos, defaultBlockState().setValue(SHAPE, StationShape.BOTTOM_BACK_LEFT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, backLeftPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(backRightPos, defaultBlockState().setValue(SHAPE, StationShape.BOTTOM_BACK_RIGHT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, backRightPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(topBackLeftPos, defaultBlockState().setValue(SHAPE, StationShape.TOP_BACK_LEFT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, topBackLeftPos, be -> be.setControllerPos(pos));
-        worldIn.setBlockAndUpdate(topBackRightPos, defaultBlockState().setValue(SHAPE, StationShape.TOP_BACK_RIGHT).setValue(HORIZONTAL_FACING, front));
-        withBlockEntityDo(worldIn, topBackRightPos, be -> be.setControllerPos(pos));
-
-    }
-
-    @Override
-    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        if (pState.getValue(SHAPE) != StationShape.CENTER) {
-            withBlockEntityDo(pLevel, pPos, StationBlockEntity::removeMultiBlock);
-            super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-            return;
-        }
-        Direction front = pState.getValue(HORIZONTAL_FACING);
-        Direction left = pState.getValue(HORIZONTAL_FACING).getClockWise();
-        Direction right = pState.getValue(HORIZONTAL_FACING).getCounterClockWise();
-        //todo better way to do this
-        BlockPos leftShaftPos = pPos.relative(front).above().relative(left);
-        BlockPos rightShaftPos = pPos.relative(front).above().relative(right);
-        BlockPos frontLeftPos = pPos.relative(front).relative(left);
-        BlockPos frontCenterPos = pPos.relative(front);
-        BlockPos frontRightPos = pPos.relative(front).relative(right);
-        BlockPos backLeftPos = pPos.relative(left);
-        BlockPos backRightPos = pPos.relative(right);
-        BlockPos topBackLeftPos = pPos.above().relative(left);
-        BlockPos topBackRightPos = pPos.above().relative(right);
-
-        destroyStationBlock(pLevel, leftShaftPos, rightShaftPos, frontLeftPos, frontCenterPos,
-                frontRightPos, backLeftPos, backRightPos, topBackLeftPos, topBackRightPos);
-
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-
-    }
-
-    private static void destroyStationBlock(Level pLevel, BlockPos... pPos) {
-        for (BlockPos pos : pPos) {
-            if (pLevel.getBlockState(pos).is(BMBlocks.STATION.get())) {
-                pLevel.destroyBlock(pos, false);
-            }
-        }
-    }
-
+    @Nullable
     @Override
     public Direction.Axis getRotationAxis(BlockState state) {
-        StationShape shape = state.getValue(SHAPE);
-        if (shape == StationShape.TOP_FRONT_LEFT_SHAFT || shape == StationShape.TOP_FRONT_RIGHT_SHAFT) {
-            return state.getValue(HORIZONTAL_FACING).getCounterClockWise().getAxis();
-        }
+        int shape = state.getValue(getPartsProperty());
+        if(shape == 2 || shape == 8)
+            return state.getValue(FACING).getCounterClockWise().getAxis();
         return null;
     }
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        StationShape shape = state.getValue(SHAPE);
-        Direction front = state.getValue(HORIZONTAL_FACING);
-        if (shape == StationShape.TOP_FRONT_LEFT_SHAFT) {
-            return face == front.getClockWise();
-        }
-        if (shape == StationShape.TOP_FRONT_RIGHT_SHAFT) {
-            return face == front.getCounterClockWise();
-        }
+        int shape = state.getValue(getPartsProperty());
+        Direction facing = state.getValue(FACING);
+        if (shape == 2) return face == facing.getClockWise();
+        if (shape == 8) return face == facing.getCounterClockWise();
         return false;
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        return pState.getValue(SHAPE).getShape(pState.getValue(HORIZONTAL_FACING));
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE);
-        super.createBlockStateDefinition(builder);
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return shapes.get(state.getValue(getPartsProperty())).get(state.getValue(FACING));
     }
 
     @Override
@@ -156,7 +176,7 @@ public class StationBlock extends HorizontalKineticBlock implements IBE<StationB
 
     @Override
     public RenderShape getRenderShape(BlockState pState) {
-        if (pState.getValue(SHAPE) == StationShape.CENTER) {
+        if (pState.getValue(getPartsProperty()) == 5) {
             return RenderShape.MODEL;
         }
         return RenderShape.INVISIBLE;

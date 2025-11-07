@@ -1,10 +1,9 @@
 package com.happysg.createbiomechanical.content.cogolem.behavior;
 
 import com.happysg.createbiomechanical.content.cogolem.CogolemEntity;
-import com.happysg.createbiomechanical.content.station.StationBlock;
-import com.happysg.createbiomechanical.content.station.StationShape;
 import com.happysg.createbiomechanical.registry.BMBlocks;
 import com.mojang.datafixers.util.Pair;
+import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -38,7 +37,7 @@ public class FindStation extends ExtendedBehaviour<CogolemEntity> {
         BlockPos stationPos = null;
         double closestDistance = Double.MAX_VALUE;
         for (Pair<BlockPos, BlockState> station : stations) {
-            if (station.getSecond().is(BMBlocks.STATION) && station.getSecond().getValue(StationBlock.SHAPE) == StationShape.FRONT_CENTER) {
+            if (station.getSecond().is(BMBlocks.STATION) && station.getSecond().getValue(((IMultipartBlock)station.getSecond().getBlock()).getPartsProperty()) == 4) {
                 double distance = entity.distanceToSqr(station.getFirst().getCenter());
                 if (distance < closestDistance) {
                     stationPos = station.getFirst();

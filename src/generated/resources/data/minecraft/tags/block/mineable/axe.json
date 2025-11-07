@@ -1,6 +1,10 @@
 {
   "values": [
     "createbiomechanical:station",
-    "createbiomechanical:power_core"
+    "createbiomechanical:power_core",
+    "createbiomechanical:bionic_casing",
+    "createbiomechanical:brass_projector",
+    "createbiomechanical:andesite_projector",
+    "createbiomechanical:cogolem_head"
   ]
 }

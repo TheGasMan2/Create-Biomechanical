@@ -7,6 +7,7 @@ import com.happysg.createbiomechanical.content.station.StationBlock;
 import com.happysg.createbiomechanical.content.station.StationShape;
 import com.happysg.createbiomechanical.registry.BMBlocks;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
@@ -34,10 +35,10 @@ public class CogolemAI {
     public static List<? extends ExtendedSensor<CogolemEntity>> getSensors() {
         return ObjectArrayList.of(
                 new NearbyPlayersSensor<>(),
-                new NearbyLivingEntitySensor<CogolemEntity>(),
+                new NearbyLivingEntitySensor<>(),
                 new NearbyBlocksSensor<CogolemEntity>()
                         .setRadius(64, 2)
-                        .setPredicate((blockState, livingEntity) -> blockState.is(BMBlocks.STATION) && blockState.getValue(StationBlock.SHAPE) == StationShape.FRONT_CENTER)
+                        .setPredicate((blockState, livingEntity) -> blockState.is(BMBlocks.STATION) && blockState.getValue(((IMultipartBlock)blockState.getBlock()).getPartsProperty()) == 4)
                         .setScanRate(e -> (int) Math.max(e.getChargeLevel(), 30))
         );
     }

@@ -3,6 +3,7 @@ package com.happysg.createbiomechanical.content.station;
 import com.happysg.createbiomechanical.content.cogolem.CogolemEntity;
 import com.happysg.createbiomechanical.content.cogolem.GolemCommands;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -104,7 +105,8 @@ public class StationBlockEntity extends KineticBlockEntity {
 
 
     public boolean isController() {
-        return getBlockState().getValue(StationBlock.SHAPE) == StationShape.CENTER;
+        var blockstate = getBlockState();
+        return blockstate.getValue(((IMultipartBlock)blockstate.getBlock()).getPartsProperty()) == 5;
     }
 
     public Optional<StationBlockEntity> getController() {

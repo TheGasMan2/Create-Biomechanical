@@ -1,15 +1,27 @@
-// 1.21.1	2025-03-23T00:20:04.796535	Registrate Provider for createbiomechanical [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-11-07T11:09:04.7220555	Registrate Provider for createbiomechanical [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+8580bfa7213040d3d113e45388fa6c87f50b39e5 assets/createbiomechanical/blockstates/andesite_projector.json
+5b18a87f394b8bcf06121ba2e1b823e3b217142f assets/createbiomechanical/blockstates/bionic_casing.json
+62daed215aeeaf663b8dbb8f801e3dae9476c674 assets/createbiomechanical/blockstates/brass_projector.json
+6fe808029f4e4a8b8d5a488378dc70ca0ae71fcf assets/createbiomechanical/blockstates/cogolem_head.json
 4d960457b060713eeae5390133dd5683bd8027bf assets/createbiomechanical/blockstates/power_core.json
-76dab817959fcc8f7da53c4b6d04216e259d16ef assets/createbiomechanical/blockstates/station.json
-7a4e01960cb457f1f4d339cb4b8c473389f284d8 assets/createbiomechanical/lang/en_ud.json
-58d846f4c79223598687ec354180f41660b0d04f assets/createbiomechanical/lang/en_us.json
+d02016e6c59902298f53eca1ea15be6703042e6c assets/createbiomechanical/blockstates/station.json
+44241ea4ff37f59cfa8469fe07231178795d7bc0 assets/createbiomechanical/lang/en_ud.json
+2ded507717eee0aa218e2b51052211132d3f9caf assets/createbiomechanical/lang/en_us.json
+6e37b9f78adca79a944f78c2cd8bcd706021d149 assets/createbiomechanical/models/item/andesite_projector.json
+16d8c12ce253f174c05236d130abbe7d88c70d00 assets/createbiomechanical/models/item/bionic_casing.json
+86f1fde47910531ab75eeb37cf9555ca2b94ef94 assets/createbiomechanical/models/item/brass_projector.json
+44a81d4dd9c49d11e75e47cfd1c2f43d8210300d assets/createbiomechanical/models/item/cogolem_head.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/createbiomechanical/models/item/cogolem_spawn_egg.json
 bb73eaff396a51793f29e199911846199d29247d assets/createbiomechanical/models/item/electron_battery.json
 56b7446249eeac2f6c2ae48d40849fb9dc331597 assets/createbiomechanical/models/item/incomplete_electron_battery.json
 8f7272a0b12647868a100afd251e42a07537b90c assets/createbiomechanical/models/item/power_core.json
 d036755594dedf47103065523f20bec622382bb2 assets/createbiomechanical/models/item/station.json
+52ac74ccb23ac3652771d13175f7daecdf3328ce data/createbiomechanical/loot_table/blocks/andesite_projector.json
+816811731d45ab46ba6cca3270a648881ef3bf5d data/createbiomechanical/loot_table/blocks/bionic_casing.json
+a2ff0351c353f82050f9179d51ab9b000027a586 data/createbiomechanical/loot_table/blocks/brass_projector.json
+ffda2ab74b9c7dd9e01740c330ce50b8fb68f696 data/createbiomechanical/loot_table/blocks/cogolem_head.json
 8458b1df18a85c6f4b237c05ce618f6424e187f6 data/createbiomechanical/loot_table/blocks/power_core.json
 638271a91757dc0cc8cd22b747f259ae28211c62 data/createbiomechanical/loot_table/blocks/station.json
 ca9df8fb3ffed3628f6555fa2e076cc86790bd69 data/createbiomechanical/loot_table/entities/cogolem.json
-6dcd3a6c4812aac3f4a500a0d8b5f2dc5236d8c4 data/minecraft/tags/block/mineable/axe.json
-6dcd3a6c4812aac3f4a500a0d8b5f2dc5236d8c4 data/minecraft/tags/block/mineable/pickaxe.json
+bd65c070f53e6e432642eb594c1873819b3f4e5e data/minecraft/tags/block/mineable/axe.json
+bd65c070f53e6e432642eb594c1873819b3f4e5e data/minecraft/tags/block/mineable/pickaxe.json

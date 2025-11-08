@@ -1,12 +1,12 @@
-// 1.21.1	2025-11-07T16:49:22.1986776	Registrate Provider for biomechanical [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-11-07T21:45:29.0197958	Registrate Provider for biomechanical [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 862511ace84fede28c2c639efaaa48e5b167bd22 assets/biomechanical/blockstates/andesite_projector.json
 6568a6ed1929120af11c1ac068d89c0ba0fdb267 assets/biomechanical/blockstates/bionic_casing.json
 19c5f8d009bb95d1c7637859fcd0cf24647fa424 assets/biomechanical/blockstates/brass_projector.json
 229d7d9b0b46157a95ac222b3ccba230e86972f1 assets/biomechanical/blockstates/cogolem_head.json
 feba9b5b77f0c80ac3c60882cae4d98c6b228b9e assets/biomechanical/blockstates/power_core.json
 0ef1bf05f86fa8b2be0f2c01d62be3849bbafc4c assets/biomechanical/blockstates/station.json
-174d5fb22fbdae090e37e67f65b835ef111eea7f assets/biomechanical/lang/en_ud.json
-5929f1a292f3ff86e087e9ae7eddf11bf6963184 assets/biomechanical/lang/en_us.json
+64647966f447ce748ff87c396d6a886aff298dfe assets/biomechanical/lang/en_ud.json
+055a3cd3b04d026c6ce4366600b87154c33b0f82 assets/biomechanical/lang/en_us.json
 9c2b1dae9f5d27f25628ccc8a356d8b07681f5c1 assets/biomechanical/models/item/andesite_projector.json
 c0b219f088f67579faa851e11a7e4c5d27c1ee1c assets/biomechanical/models/item/bionic_casing.json
 d707ee674ef84daaece6bd8fe79c3cc09e94cf2f assets/biomechanical/models/item/brass_projector.json

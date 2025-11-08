@@ -9,5 +9,6 @@
   "item.biomechanical.cogolem_spawn_egg": "Cogolem Spawn Egg",
   "item.biomechanical.electron_battery": "Electron Battery",
   "item.biomechanical.incomplete_electron_battery": "Incomplete Electron Battery",
-  "item.biomechanical.tuner": "Tuner"
+  "item.biomechanical.tuner": "Tuner",
+  "itemGroup.biomechanical.main": "Create: Biomechanical"
 }

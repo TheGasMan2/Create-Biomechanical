@@ -1,6 +1,6 @@
 package com.happysg.biomechanical.content.cogolem.behavior;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,14 +11,14 @@ import net.tslat.smartbrainlib.util.BrainUtils;
 
 import java.util.List;
 
-public class ProtectOwner extends ExtendedBehaviour<CogolemEntity> {
+public class ProtectOwner extends ExtendedBehaviour<Cogolem> {
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {
         return List.of();
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel level, CogolemEntity entity) {
+    protected boolean checkExtraStartConditions(ServerLevel level, Cogolem entity) {
         // Check if the entity has an owner
         LivingEntity owner = entity.getOwner();
         if (owner == null) {
@@ -33,7 +33,7 @@ public class ProtectOwner extends ExtendedBehaviour<CogolemEntity> {
     }
 
     @Override
-    protected void start(CogolemEntity entity) {
+    protected void start(Cogolem entity) {
         LivingEntity owner = entity.getOwner();
         if (owner == null) {
             return; // No owner to protect

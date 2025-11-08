@@ -4,7 +4,6 @@ import com.happysg.biomechanical.world.level.block.StationBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,7 +30,6 @@ public class BMBlocks {
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
             .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
-            .addLayer(() -> RenderType::cutoutMipped) //TODO
             .simpleItem()
             .register();
 
@@ -40,7 +38,6 @@ public class BMBlocks {
             .blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
-            .addLayer(() -> RenderType::cutoutMipped)
             .simpleItem()
             .register();
 
@@ -50,7 +47,6 @@ public class BMBlocks {
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
             .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
-            .addLayer(() -> RenderType::cutoutMipped)
             .simpleItem()
             .register();
 
@@ -59,8 +55,7 @@ public class BMBlocks {
             .blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
-            .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
-            .addLayer(() -> RenderType::cutoutMipped)
+            .properties(BlockBehaviour.Properties::noOcclusion)
             .simpleItem()
             .register();
 
@@ -69,8 +64,7 @@ public class BMBlocks {
             .blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
-            .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
-            .addLayer(() -> RenderType::cutoutMipped)
+            .properties(BlockBehaviour.Properties::noOcclusion)
             .simpleItem()
             .register();
 

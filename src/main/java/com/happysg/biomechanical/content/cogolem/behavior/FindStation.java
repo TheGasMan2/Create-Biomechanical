@@ -1,6 +1,6 @@
 package com.happysg.biomechanical.content.cogolem.behavior;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import com.happysg.biomechanical.registry.BMBlocks;
 import com.mojang.datafixers.util.Pair;
 import net.liukrast.multipart.block.IMultipartBlock;
@@ -15,14 +15,14 @@ import net.tslat.smartbrainlib.registry.SBLMemoryTypes;
 
 import java.util.List;
 
-public class FindStation extends ExtendedBehaviour<CogolemEntity> {
+public class FindStation extends ExtendedBehaviour<Cogolem> {
     @Override
     protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {
         return List.of(Pair.of(SBLMemoryTypes.NEARBY_BLOCKS.get(), MemoryStatus.VALUE_PRESENT));
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel level, CogolemEntity entity) {
+    protected boolean checkExtraStartConditions(ServerLevel level, Cogolem entity) {
         WalkTarget station = entity.getBrain().getMemory(MemoryModuleType.WALK_TARGET).orElse(null);
         if (station == null)
             return true;
@@ -32,7 +32,7 @@ public class FindStation extends ExtendedBehaviour<CogolemEntity> {
     }
 
     @Override
-    protected void start(CogolemEntity entity) {
+    protected void start(Cogolem entity) {
         List<Pair<BlockPos, BlockState>> stations = entity.getBrain().getMemory(SBLMemoryTypes.NEARBY_BLOCKS.get()).get();
         BlockPos stationPos = null;
         double closestDistance = Double.MAX_VALUE;

@@ -194,6 +194,7 @@ public class StationBlock extends KineticBlock implements IBE<StationBlockEntity
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return state.getValue(getPartsProperty()) == CENTER ? IBE.super.newBlockEntity(pos, state) : null;
+        int part = state.getValue(getPartsProperty());
+        return part == CENTER || part == TOP_FRONT_LEFT || part == TOP_FRONT_RIGHT ? IBE.super.newBlockEntity(pos, state) : null;
     }
 }

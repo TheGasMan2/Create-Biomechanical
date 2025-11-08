@@ -1,6 +1,6 @@
 package com.happysg.biomechanical.world.level.block.entity;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import com.happysg.biomechanical.content.cogolem.GolemCommands;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.liukrast.multipart.block.IMultipartBlock;
@@ -27,7 +27,7 @@ import static com.simibubi.create.content.kinetics.base.HorizontalKineticBlock.H
 public class StationBlockEntity extends KineticBlockEntity {
 
     BlockPos controllerPos = BlockPos.ZERO;
-    CogolemEntity cachedCogolem = null;
+    Cogolem cachedCogolem = null;
     GolemCommands prevCommand = null;
 
     public StationBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
@@ -155,7 +155,7 @@ public class StationBlockEntity extends KineticBlockEntity {
     }
 
     public void onEntityInside(Entity entity) {
-        if (entity instanceof CogolemEntity golem) {
+        if (entity instanceof Cogolem golem) {
             if (golem.getChargeLevel() > 95 && golem.getCommand() != GolemCommands.STATION) {
                 // If the cogolem is already charged enough and not set to STATION, ignore it
                 return; // Ignore if the cogolem is already occupying the station
@@ -172,7 +172,7 @@ public class StationBlockEntity extends KineticBlockEntity {
         }
     }
 
-    private boolean validateGoloem(CogolemEntity occupyingCogolem) {//rename or refactor this method to better reflect its purpose
+    private boolean validateGoloem(Cogolem occupyingCogolem) {//rename or refactor this method to better reflect its purpose
         if (occupyingCogolem == null) {
             return false; // No cogolem occupying the station
         }

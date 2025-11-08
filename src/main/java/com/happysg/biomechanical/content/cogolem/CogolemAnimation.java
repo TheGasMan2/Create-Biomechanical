@@ -1,20 +1,22 @@
 package com.happysg.biomechanical.content.cogolem;
 
+import com.happysg.biomechanical.world.entity.Cogolem;
 import net.minecraft.world.entity.LivingEntity;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DefaultAnimations;
 
+@Deprecated
 public class CogolemAnimation {
 
     public static final RawAnimation STAND = RawAnimation.begin().thenPlay("stand");
 
-    static PlayState predicate(CogolemEntity cogolem, AnimationState<CogolemEntity> animationState) {
+    static PlayState predicate(Cogolem cogolem, AnimationState<Cogolem> animationState) {
         return PlayState.CONTINUE;
     }
 
-    static void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar, CogolemEntity cogolem) {
-        AnimationController<CogolemEntity> controller =
+    public static void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar, Cogolem cogolem) {
+        AnimationController<Cogolem> controller =
                 new AnimationController<>(cogolem, "controller", 0,
                         state -> CogolemAnimation.predicate(cogolem, state));
         controllerRegistrar.add(controller);

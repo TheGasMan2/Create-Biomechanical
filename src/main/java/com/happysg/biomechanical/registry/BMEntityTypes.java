@@ -1,6 +1,6 @@
 package com.happysg.biomechanical.registry;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import com.happysg.biomechanical.content.cogolem.CogolemRenderer;
 import com.tterrag.registrate.util.entry.EntityEntry;
 import net.minecraft.world.entity.EntityType;
@@ -14,11 +14,11 @@ import static com.happysg.biomechanical.Biomechanical.REGISTRATE;
 
 public class BMEntityTypes {
 
-    public static EntityEntry<CogolemEntity> COGOLEM = REGISTRATE
-            .entity("cogolem", CogolemEntity::new, MobCategory.CREATURE)
+    public static EntityEntry<Cogolem> COGOLEM = REGISTRATE
+            .entity("cogolem", Cogolem::new, MobCategory.CREATURE)
             .properties(p -> p.sized(1.5f, 2.75f).clientTrackingRange(8).updateInterval(3))
             .properties(EntityType.Builder::fireImmune)
-            .attributes(CogolemEntity::createAttributes)
+            .attributes(Cogolem::createAttributes)
             .renderer(() -> CogolemRenderer::new)
             .loot((registrateEntityLootTables, cogolemEntityEntityType) -> registrateEntityLootTables.add(cogolemEntityEntityType, LootTable.lootTable()
                     .withPool(

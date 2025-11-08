@@ -1,13 +1,13 @@
 package com.happysg.biomechanical.content.cogolem.behavior;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import net.minecraft.world.entity.LivingEntity;
 import net.tslat.smartbrainlib.api.core.behaviour.custom.move.FollowEntity;
 
 /**
  * @param <E> The owner of the brain
  */
-public class FollowOwner<E extends CogolemEntity> extends FollowEntity<E, LivingEntity> {
+public class FollowOwner<E extends Cogolem> extends FollowEntity<E, LivingEntity> {
 	protected LivingEntity owner = null;
 
 	public FollowOwner() {

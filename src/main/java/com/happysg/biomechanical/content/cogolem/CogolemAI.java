@@ -4,6 +4,7 @@ import com.happysg.biomechanical.content.cogolem.behavior.FindStation;
 import com.happysg.biomechanical.content.cogolem.behavior.FollowOwner;
 import com.happysg.biomechanical.content.cogolem.behavior.ProtectOwner;
 import com.happysg.biomechanical.registry.BMBlocks;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.world.entity.monster.Creeper;
@@ -30,50 +31,50 @@ import java.util.List;
 
 public class CogolemAI {
 
-    public static List<? extends ExtendedSensor<CogolemEntity>> getSensors() {
+    public static List<? extends ExtendedSensor<Cogolem>> getSensors() {
         return ObjectArrayList.of(
                 new NearbyPlayersSensor<>(),
                 new NearbyLivingEntitySensor<>(),
-                new NearbyBlocksSensor<CogolemEntity>()
+                new NearbyBlocksSensor<Cogolem>()
                         .setRadius(64, 2)
                         .setPredicate((blockState, livingEntity) -> blockState.is(BMBlocks.STATION) && blockState.getValue(((IMultipartBlock)blockState.getBlock()).getPartsProperty()) == 4)
                         .setScanRate(e -> (int) Math.max(e.getChargeLevel(), 30))
         );
     }
 
-    public static BrainActivityGroup<CogolemEntity> getCoreTasks() {
+    public static BrainActivityGroup<Cogolem> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
                 new FollowOwner<>().stopFollowingWithin(2).startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.FOLLOW && cogolemEntity.getChargeLevel() > 20),
                 new FindStation().startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.STATION || cogolemEntity.getChargeLevel() < 25),
-                new MoveToWalkTarget<CogolemEntity>().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY && cogolemEntity.getChargeLevel() > 0),
-                new LookAtTarget<CogolemEntity>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(40, 300)).startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY)
+                new MoveToWalkTarget<Cogolem>().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY && cogolemEntity.getChargeLevel() > 0),
+                new LookAtTarget<Cogolem>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(40, 300)).startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY)
         );
 
     }
 
-    public static BrainActivityGroup<CogolemEntity> getIdleTasks() {
+    public static BrainActivityGroup<Cogolem> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new FirstApplicableBehaviour<CogolemEntity>(
-                        new TargetOrRetaliate<CogolemEntity>()
+                new FirstApplicableBehaviour<Cogolem>(
+                        new TargetOrRetaliate<Cogolem>()
                                 .attackablePredicate(target -> target instanceof Enemy && !(target instanceof Creeper))
                                 .startCondition(golem -> golem.getChargeLevel() > 15 && golem.getCommand() == GolemCommands.WANDER),
                         new ProtectOwner().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY),
-                        new SetPlayerLookTarget<CogolemEntity>()
+                        new SetPlayerLookTarget<Cogolem>()
                                 .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY),
-                        new SetRandomLookTarget<CogolemEntity>()
+                        new SetRandomLookTarget<Cogolem>()
                                 .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY)),
                 new OneRandomBehaviour<>(
-                        new SetRandomWalkTarget<CogolemEntity>()
+                        new SetRandomWalkTarget<Cogolem>()
                                 .startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.WANDER),
                         new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 60)))
         );
     }
 
-    public static BrainActivityGroup<CogolemEntity> getFightTasks() {
+    public static BrainActivityGroup<Cogolem> getFightTasks() {
         return BrainActivityGroup.fightTasks(
                 new InvalidateAttackTarget<>(),
                 new SetWalkTargetToAttackTarget<>(),
-                new AnimatableMeleeAttack<CogolemEntity>(2)
+                new AnimatableMeleeAttack<Cogolem>(2)
                         .attackInterval(e -> 30)
                         .startCondition(cogolemEntity -> cogolemEntity.getChargeLevel() > 0)
                         .whenStarting(cogolemEntity -> cogolemEntity.takeCharge(5))

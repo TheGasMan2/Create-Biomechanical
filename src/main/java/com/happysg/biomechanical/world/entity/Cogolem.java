@@ -1,5 +1,8 @@
-package com.happysg.biomechanical.content.cogolem;
+package com.happysg.biomechanical.world.entity;
 
+import com.happysg.biomechanical.content.cogolem.CogolemAI;
+import com.happysg.biomechanical.content.cogolem.CogolemAnimation;
+import com.happysg.biomechanical.content.cogolem.GolemCommands;
 import com.happysg.biomechanical.content.tuner.ITunerOverlay;
 import com.simibubi.create.AllBlocks;
 import joptsimple.internal.Strings;
@@ -43,24 +46,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class CogolemEntity extends PathfinderMob implements GeoEntity, SmartBrainOwner<CogolemEntity>, ITunerOverlay, OwnableEntity {
+public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner<Cogolem>, ITunerOverlay, OwnableEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    /**
+     * Replace it with an attribute
+     * */
+    @Deprecated
     private static final float MAX_CHARGE_LEVEL = 100;
 
-    private static final EntityDataAccessor<Float> CHARGE_LEVEL = SynchedEntityData.defineId(CogolemEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(CogolemEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Optional<UUID>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(CogolemEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Float> CHARGE_LEVEL = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Optional<UUID>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> TEXTURE_STATE =
-            SynchedEntityData.defineId(CogolemEntity.class, EntityDataSerializers.INT);
+            SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
 
 
-    public CogolemEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public Cogolem(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
 
     @Override
-    protected @NotNull PathNavigation createNavigation(Level level) {
+    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
         return new SmoothGroundNavigation(this, level);
     }
 
@@ -209,22 +216,22 @@ public class CogolemEntity extends PathfinderMob implements GeoEntity, SmartBrai
     }
 
     @Override
-    public List<? extends ExtendedSensor<? extends CogolemEntity>> getSensors() {
+    public List<? extends ExtendedSensor<? extends Cogolem>> getSensors() {
         return CogolemAI.getSensors();
     }
 
     @Override
-    public BrainActivityGroup<? extends CogolemEntity> getCoreTasks() {
+    public BrainActivityGroup<? extends Cogolem> getCoreTasks() {
         return CogolemAI.getCoreTasks();
     }
 
     @Override
-    public BrainActivityGroup<? extends CogolemEntity> getIdleTasks() {
+    public BrainActivityGroup<? extends Cogolem> getIdleTasks() {
         return CogolemAI.getIdleTasks();
     }
 
     @Override
-    public BrainActivityGroup<? extends CogolemEntity> getFightTasks() {
+    public BrainActivityGroup<? extends Cogolem> getFightTasks() {
         return CogolemAI.getFightTasks();
     }
 

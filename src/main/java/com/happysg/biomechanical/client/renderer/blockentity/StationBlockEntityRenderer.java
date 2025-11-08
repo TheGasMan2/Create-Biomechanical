@@ -25,17 +25,14 @@ public class StationBlockEntityRenderer extends ShaftRenderer<StationBlockEntity
     protected void renderSafe(StationBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         BlockState state = be.getBlockState();
         int shape = state.getValue(((IMultipartBlock)state.getBlock()).getPartsProperty());
-        if(shape != StationBlock.CENTER) return;
-        /* RENDER MIDDLE PART */
         Direction facing = state.getValue(StationBlock.FACING);
-        ms.translate(-facing.getStepX(), -facing.getStepY(), -facing.getStepZ());
-        VertexConsumer consumer = buffer.getBuffer(RenderType.cutout());
-        SuperByteBuffer frame = CachedBuffers.partialFacing(BMPartials.STATION_FRAME, state, facing.getOpposite());
-        frame.light(light);
-        frame.renderInto(ms, consumer);
-
-        //TODO: FINISH
-
+        if(shape == StationBlock.CENTER) {
+            VertexConsumer consumer = buffer.getBuffer(RenderType.cutout());
+            SuperByteBuffer frame = CachedBuffers.partialFacing(BMPartials.STATION_FRAME, state, facing.getOpposite());
+            frame.light(light);
+            frame.renderInto(ms, consumer);
+        }
+        if(shape != StationBlock.TOP_FRONT_LEFT && shape != StationBlock.TOP_FRONT_RIGHT) return;
         Direction shaftFacing = shape == StationBlock.TOP_FRONT_LEFT ? facing.getClockWise() : facing.getCounterClockWise();
         RenderType type = getRenderType(be, state);
         SuperByteBuffer shaft = CachedBuffers.partialFacing(BMPartials.STATION_SHAFT, state, shaftFacing);

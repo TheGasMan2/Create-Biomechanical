@@ -1,6 +1,6 @@
 package com.happysg.biomechanical.content.tuner;
 
-import com.happysg.biomechanical.content.cogolem.CogolemEntity;
+import com.happysg.biomechanical.world.entity.Cogolem;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -26,7 +26,7 @@ public class TunerItem extends Item {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity interactionTarget, InteractionHand usedHand) {
-        if(interactionTarget instanceof CogolemEntity golem){
+        if(interactionTarget instanceof Cogolem golem){
             golem.cycleCommand(player);
         }
         return super.interactLivingEntity(stack, player, interactionTarget, usedHand);

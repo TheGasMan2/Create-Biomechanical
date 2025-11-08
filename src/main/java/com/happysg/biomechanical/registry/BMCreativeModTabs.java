@@ -1,6 +1,5 @@
 package com.happysg.biomechanical.registry;
 
-import com.happysg.biomechanical.Biomechanical;
 import com.happysg.biomechanical.BiomechanicalConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -10,6 +9,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import static com.happysg.biomechanical.Biomechanical.REGISTRATE;
 
 public class BMCreativeModTabs {
 
@@ -34,6 +34,7 @@ public class BMCreativeModTabs {
 
     public static void register(IEventBus eventBus) {
         REGISTER.register(eventBus);
+        REGISTRATE.addRawLang("itemGroup.biomechanical.main", "Create: Biomechanical");
     }
 }
 

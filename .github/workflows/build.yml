@@ -53,7 +53,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Send building message to discord
-        uses: tsickert/discord-webhook@v5.1.0
+        uses: fateyan/action-discord-notifier@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message-title: Building mod from branch ${{ steps.get_branch.outputs.branch }}

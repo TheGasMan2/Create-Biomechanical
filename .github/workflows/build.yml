@@ -51,16 +51,3 @@ jobs:
         with:
           name: biomechanical-artifacts
           path: build/libs/*.jar
-
-      - name: Send building message to discord
-        uses: fateyan/action-discord-notifier@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message-title: Building mod from branch ${{ steps.get_branch.outputs.branch }}
-
-      - name: Send built file to discord
-        uses: sinshutu/upload-to-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: ./build/libs/*.jar

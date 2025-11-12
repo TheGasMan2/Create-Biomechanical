@@ -51,3 +51,12 @@ jobs:
         with:
           name: biomechanical-artifacts
           path: build/libs/*.jar
+
+          
+      - name: Send Discord Notification
+        if: ${{ secrets.DISCORD_WEBHOOK && secrets.DISCORD_WEBHOOK != '' }}
+        uses: Ilshidur/action-discord@v2
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: "Build finished!"
+

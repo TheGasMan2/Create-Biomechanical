@@ -1,0 +1,24 @@
+{
+  "format_version": "1.21.6",
+  "credit": "Made with Blockbench",
+  "render_type": "cutout_mipped",
+  "texture_size": [256, 256],
+  "textures": {
+	"0": "biomechanical:block/station",
+	"particle": "biomechanical:block/station_particle"
+  },
+  "elements": [
+	{
+	  "from": [0, 0, 0],
+	  "to": [16, 16, 16],
+	  "faces": {
+		"north": {"uv": [5.25, 6.75, 6.25, 7.75], "texture": "#0", "cullface": "north"},
+		"east": {"uv": [6.25, 6.75, 7.25, 7.75], "texture": "#0", "cullface": "east"},
+		"south": {"uv": [2, 7.25, 3, 8.25], "texture": "#0", "cullface": "south"},
+		"west": {"uv": [3, 7.25, 4, 8.25], "texture": "#0", "cullface": "west"},
+		"up": {"uv": [8.25, 4.5, 7.25, 3.5], "texture": "#0", "cullface": "up"},
+		"down": {"uv": [5, 7.25, 4, 8.25], "texture": "#0", "cullface": "down"}
+	  }
+	}
+  ]
+}

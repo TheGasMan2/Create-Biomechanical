@@ -1,0 +1,14 @@
+{
+  "block.biomechanical.andesite_projector": "Andesite Projector",
+  "block.biomechanical.bionic_casing": "Bionic Casing",
+  "block.biomechanical.brass_projector": "Brass Projector",
+  "block.biomechanical.cogolem_head": "Cogolem Head",
+  "block.biomechanical.power_core": "Power Core",
+  "block.biomechanical.station": "Station",
+  "entity.biomechanical.cogolem": "Cogolem",
+  "item.biomechanical.cogolem_spawn_egg": "Cogolem Spawn Egg",
+  "item.biomechanical.electron_battery": "Electron Battery",
+  "item.biomechanical.incomplete_electron_battery": "Incomplete Electron Battery",
+  "item.biomechanical.tuner": "Tuner",
+  "itemGroup.biomechanical.main": "Create: Biomechanical"
+}

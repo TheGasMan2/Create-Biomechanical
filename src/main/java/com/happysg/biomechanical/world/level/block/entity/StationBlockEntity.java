@@ -1,7 +1,7 @@
 package com.happysg.biomechanical.world.level.block.entity;
 
 import com.happysg.biomechanical.world.entity.Cogolem;
-import com.happysg.biomechanical.content.cogolem.GolemCommands;
+import com.happysg.biomechanical.content.cogolem.GolemCommand;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.core.BlockPos;
@@ -28,7 +28,7 @@ public class StationBlockEntity extends KineticBlockEntity {
 
     BlockPos controllerPos = BlockPos.ZERO;
     Cogolem cachedCogolem = null;
-    GolemCommands prevCommand = null;
+    GolemCommand prevCommand = null;
 
     public StationBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
         super(typeIn, pos, state);
@@ -69,7 +69,7 @@ public class StationBlockEntity extends KineticBlockEntity {
         }
         if (cachedCogolem.getChargeLevel() == 100) {
             // Release the cogolem if it was wandering or following and has a high charge level
-            if (prevCommand == GolemCommands.FOLLOW || prevCommand == GolemCommands.WANDER)
+            if (prevCommand == GolemCommand.FOLLOW || prevCommand == GolemCommand.WANDER)
                 cachedCogolem.setCommand(prevCommand);
             prevCommand = null; // Reset the previous command after releasing
             cachedCogolem.triggerAnim("charge", "stand");
@@ -156,13 +156,13 @@ public class StationBlockEntity extends KineticBlockEntity {
 
     public void onEntityInside(Entity entity) {
         if (entity instanceof Cogolem golem) {
-            if (golem.getChargeLevel() > 95 && golem.getCommand() != GolemCommands.STATION) {
+            if (golem.getChargeLevel() > 95 && golem.getCommand() != GolemCommand.STATION) {
                 // If the cogolem is already charged enough and not set to STATION, ignore it
                 return; // Ignore if the cogolem is already occupying the station
             }
             cachedCogolem = golem; // Set the occupying cogolem if none is set
             prevCommand = golem.getCommand(); // Store the previous command of the occupying cogolem
-            cachedCogolem.setCommand(GolemCommands.STAY); // Set the command of the occupying cogolem to STATION
+            cachedCogolem.setCommand(GolemCommand.STAY); // Set the command of the occupying cogolem to STATION
             Vec3 cogolemPosition = getBlockPos().relative(getBlockState().getValue(HORIZONTAL_FACING)).getBottomCenter(); // Get the position of the station block
             cachedCogolem.setPos(cogolemPosition);
             cachedCogolem.setDeltaMovement(0, 0, 0); // Stop any movement of the cogolem when it enters the station
@@ -179,7 +179,7 @@ public class StationBlockEntity extends KineticBlockEntity {
         Vec3 cogolemPosition = occupyingCogolem.position();
         // Check if the occupying cogolem is still within the station block
         double distanceSquared = cogolemPosition.distanceToSqr(getBlockPos().getBottomCenter());
-        return distanceSquared < 2.0 && occupyingCogolem.getCommand() == GolemCommands.STAY;
+        return distanceSquared < 2.0 && occupyingCogolem.getCommand() == GolemCommand.STAY;
     }
 }
 

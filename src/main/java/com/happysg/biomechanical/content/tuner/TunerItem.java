@@ -27,7 +27,7 @@ public class TunerItem extends Item {
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity interactionTarget, InteractionHand usedHand) {
         if(interactionTarget instanceof Cogolem golem){
-            golem.cycleCommand(player);
+            //TODO: Cycle command
         }
         return super.interactLivingEntity(stack, player, interactionTarget, usedHand);
     }

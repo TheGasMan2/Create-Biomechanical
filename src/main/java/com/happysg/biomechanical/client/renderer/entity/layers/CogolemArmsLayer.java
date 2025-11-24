@@ -4,21 +4,25 @@ import com.happysg.biomechanical.BiomechanicalConstants;
 import com.happysg.biomechanical.world.entity.Cogolem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class CogolemArmsLayer extends GeoRenderLayer<Cogolem> {
-    //TODO: DYNAMIC REGISTRABLE ARMS?
-    private static final ResourceLocation TEXTURE = BiomechanicalConstants.png("textures/entity/cogolem/arms/oak");
 
     private final GeoModel<Cogolem> model = new DefaultedEntityGeoModel<>(BiomechanicalConstants.id("oak")) {
         @Override
@@ -36,49 +40,31 @@ public class CogolemArmsLayer extends GeoRenderLayer<Cogolem> {
         return model;
     }
 
+    //TODO: Currently doesn't support arm-animations
     @Override
-    public void render(PoseStack poseStack, Cogolem animatable, BakedGeoModel bakedModel, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-        renderType = RenderType.entityCutout(TEXTURE);
-        BakedGeoModel armsModel = getDefaultBakedModel(animatable);
-        var body = getProperties("body", bakedModel);
-        var chest = body == null ? null : body.add(getProperties("chest", bakedModel));
-        var rightArm = chest == null ? null : chest.add(getProperties("right_arm", bakedModel));
-        var leftArm = chest == null ? null : chest.add(getProperties("left_arm", bakedModel));
-        if(rightArm == null || leftArm == null) return;
-        armsModel.getBone("right_arm").ifPresent(ra -> set(ra, rightArm));
-        armsModel.getBone("left_arm").ifPresent(la -> set(la, leftArm));
-        getRenderer().reRender(armsModel, poseStack, bufferSource, animatable, renderType,
-                bufferSource.getBuffer(renderType), partialTick, LightTexture.FULL_SKY, packedOverlay,
-                getRenderer().getRenderColor(animatable, partialTick, packedLight).argbInt());
-    }
-    
-    private Properties getProperties(String name, BakedGeoModel model) {
-        var opt = model.getBone(name);
-        if(opt.isEmpty()) {
-            BiomechanicalConstants.LOGGER.error("Cannot find part {} in model", name);
-            return null;
-        }
-        var m = opt.get();
-        return new Properties(m.getPosX(), m.getPosY(), m.getPosZ(), m.getRotX(), m.getRotY(), m.getRotZ(), m.getScaleX(), m.getScaleY(), m.getScaleZ(), m.isHidden());
-    }
-    
-    private record Properties(float x, float y, float z, float rX, float rY, float rZ, float sX, float sY, float sZ, boolean hidden) {
-        public Properties add(Properties o) {
-            if(o == null) return null;
-            return new Properties(this.x + o.x, this.y + o.y, this.z + o.z, this.rX + o.rX, this.rY + o.rY, this.rZ + o.rZ, this.sX * o.sX, this.sY * o.sY, this.sZ * o.sZ, this.hidden && o.hidden);
-        }
-    }
-
-    private static void set(GeoBone bone, Properties p) {
-        bone.setPosX(p.x);
-        bone.setPosY(p.y);
-        bone.setPosZ(p.z);
-        bone.setRotX(p.rX);
-        bone.setRotY(p.rY);
-        bone.setRotZ(p.rZ);
-        bone.setScaleX(p.sX);
-        bone.setScaleY(p.sY);
-        bone.setScaleZ(p.sZ);
-        bone.setHidden(p.hidden);
+    public void renderForBone(PoseStack poseStack, Cogolem animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+        if(!bone.getName().equals("left_arm") && !bone.getName().equals("right_arm")) return;
+        boolean left = bone.getName().equals("left_arm");
+        poseStack.pushPose();
+        var optArmToRender = getDefaultBakedModel(animatable).getBone((left?"left":"right") + "_arm");
+        if(optArmToRender.isEmpty()) return;
+        var armToRender = optArmToRender.get();
+        var color = renderer.getRenderColor(animatable, partialTick, packedLight).argbInt();
+        var vertex = bufferSource.getBuffer(renderType);
+        renderType = RenderType.entityCutout(model.getTextureResource(animatable, renderer));
+        renderer.renderCubesOfBone(
+                poseStack,
+                armToRender,
+                vertex,
+                packedLight, packedOverlay,
+                color
+        );
+        renderer.renderChildBones(
+                poseStack,
+                animatable,
+                armToRender,
+                renderType, bufferSource, vertex,
+                false, partialTick, packedLight, packedOverlay, color);
+        poseStack.popPose();
     }
 }

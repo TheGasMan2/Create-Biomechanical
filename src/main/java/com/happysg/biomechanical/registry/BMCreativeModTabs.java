@@ -17,7 +17,7 @@ public class BMCreativeModTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, BiomechanicalConstants.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATE_BIOMECHANICAL_TAB = REGISTER.register("main",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(BMBlocks.COGOLEM_HEAD))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(BMBlocks.POWER_CORE))
                     .title(Component.translatable("itemGroup.biomechanical.main"))
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(BMBlocks.STATION);

@@ -22,7 +22,6 @@ public class BMCreativeModTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(BMBlocks.STATION);
                         pOutput.accept(BMBlocks.POWER_CORE);
-                        pOutput.accept(BMBlocks.BIONIC_CASING);
                         pOutput.accept(BMBlocks.BRASS_PROJECTOR);
                         pOutput.accept(BMBlocks.ANDESITE_PROJECTOR);
                         pOutput.accept(BMItems.INCOMPLETE_ELECTRON_BATTERY);

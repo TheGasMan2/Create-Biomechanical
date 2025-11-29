@@ -1,5 +1,6 @@
 package com.happysg.biomechanical.registry;
 
+import com.happysg.biomechanical.content.powercore.PowerCore;
 import com.happysg.biomechanical.world.level.block.StationBlock;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
@@ -24,14 +25,15 @@ public class BMBlocks {
             .build()
             .register();
 
-    public static final BlockEntry<Block> POWER_CORE = REGISTRATE
-            .block("power_core", Block::new)
+    public static final BlockEntry<PowerCore> POWER_CORE = REGISTRATE
+            .block("power_core", PowerCore::new)
             .blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
             .properties(BlockBehaviour.Properties::noOcclusion)
             .simpleItem()
             .register();
+
 
     public static final BlockEntry<Block> BRASS_PROJECTOR = REGISTRATE
             .block("brass_projector", Block::new)

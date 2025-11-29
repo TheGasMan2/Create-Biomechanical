@@ -38,7 +38,7 @@ public class BMBlocks {
             .blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
             .transform(axeOrPickaxe())
             .initialProperties(SharedProperties::softMetal)
-            .properties(BlockBehaviour.Properties::noOcclusion)  // <-- Add noOcclusion here
+            .properties(BlockBehaviour.Properties::noOcclusion)
             .simpleItem()
             .register();
 

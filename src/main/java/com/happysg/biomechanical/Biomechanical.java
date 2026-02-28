@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -25,18 +24,20 @@ public class Biomechanical {
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(BiomechanicalConstants.MOD_ID)
             .defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
 
-    public Biomechanical(IEventBus modEventBus, ModContainer modContainer) {
-        REGISTRATE.registerEventListeners(modEventBus);
+    public Biomechanical(IEventBus eventBus) {
+        REGISTRATE.registerEventListeners(eventBus);
         /* INIT REGISTRIES */
         BMBlocks.register();
         BMBlockEntityTypes.register();
         BMItems.register();
         BMEntityTypes.register();
         BMPartials.register();
-        BMCreativeModTabs.register(modEventBus);
+        BMCreativeModTabs.register(eventBus);
+        BMAttributes.init(eventBus);
+        BMMemoryModuleTypes.init(eventBus);
 
         /* EVENTS */
-        modEventBus.addListener(GolemTunerOverlayRenderer::registerOverlay);
+        eventBus.addListener(GolemTunerOverlayRenderer::registerOverlay);
         NeoForge.EVENT_BUS.register(this);
     }
 

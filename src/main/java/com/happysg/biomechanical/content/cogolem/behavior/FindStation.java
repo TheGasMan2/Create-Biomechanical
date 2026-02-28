@@ -1,54 +1,70 @@
 package com.happysg.biomechanical.content.cogolem.behavior;
 
+import com.google.common.collect.ImmutableMap;
+import com.happysg.biomechanical.registry.BMMemoryModuleTypes;
 import com.happysg.biomechanical.world.entity.Cogolem;
 import com.happysg.biomechanical.registry.BMBlocks;
 import com.mojang.datafixers.util.Pair;
 import net.liukrast.multipart.block.IMultipartBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.tslat.smartbrainlib.api.core.behaviour.ExtendedBehaviour;
 import net.tslat.smartbrainlib.registry.SBLMemoryTypes;
 
 import java.util.List;
+import java.util.Optional;
 
-public class FindStation extends ExtendedBehaviour<Cogolem> {
-    @Override
-    protected List<Pair<MemoryModuleType<?>, MemoryStatus>> getMemoryRequirements() {
-        return List.of(Pair.of(SBLMemoryTypes.NEARBY_BLOCKS.get(), MemoryStatus.VALUE_PRESENT));
+public class FindStation extends Behavior<Cogolem> {
+    private static final int TICKS_UNTIL_TIMEOUT = 1200;
+    final float speedModifier;
+
+    public FindStation(float speedModifier) {
+        super(ImmutableMap.of(BMMemoryModuleTypes.COGOLEM_STATIONS.get(), MemoryStatus.VALUE_PRESENT), TICKS_UNTIL_TIMEOUT);
+        this.speedModifier = speedModifier;
     }
 
     @Override
-    protected boolean checkExtraStartConditions(ServerLevel level, Cogolem entity) {
-        WalkTarget station = entity.getBrain().getMemory(MemoryModuleType.WALK_TARGET).orElse(null);
-        if (station == null)
-            return true;
-
-        BlockPos pos = station.getTarget().currentBlockPosition();
-        return !level.getBlockState(pos).is(BMBlocks.STATION);
+    protected boolean checkExtraStartConditions(ServerLevel level, Cogolem owner) {
+        return owner.getBrain()
+                .getActiveNonCoreActivity()
+                .map(act -> act == Activity.IDLE || act == Activity.WORK || act == Activity.PLAY)
+                .orElse(true);
     }
 
     @Override
-    protected void start(Cogolem entity) {
-        List<Pair<BlockPos, BlockState>> stations = entity.getBrain().getMemory(SBLMemoryTypes.NEARBY_BLOCKS.get()).get();
-        BlockPos stationPos = null;
-        double closestDistance = Double.MAX_VALUE;
-        for (Pair<BlockPos, BlockState> station : stations) {
-            if (station.getSecond().is(BMBlocks.STATION) && station.getSecond().getValue(((IMultipartBlock)station.getSecond().getBlock()).getPartsProperty()) == 4) {
-                double distance = entity.distanceToSqr(station.getFirst().getCenter());
-                if (distance < closestDistance) {
-                    stationPos = station.getFirst();
-                    closestDistance = distance;
-                }
-            }
-        }
-        if (stationPos == null)
-            return;
-        WalkTarget target = new WalkTarget(stationPos.getCenter(), 1f, 0);
-        entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, target);
+    protected boolean canStillUse(ServerLevel level, Cogolem entity, long gameTime) {
+        return entity.getBrain().hasMemoryValue(BMMemoryModuleTypes.COGOLEM_STATIONS.get());
     }
 
+    @Override
+    protected void tick(ServerLevel level, Cogolem owner, long gameTime) {
+        BehaviorUtils.setWalkAndLookTargetMemories(
+                owner, owner.getBrain().getMemory(BMMemoryModuleTypes.COGOLEM_STATIONS.get()).get().pos(), this.speedModifier, 1
+        );
+    }
+
+    @Override
+    protected void stop(ServerLevel level, Cogolem entity, long gameTime) {
+        Optional<GlobalPos> optional = entity.getBrain().getMemory(BMMemoryModuleTypes.COGOLEM_STATIONS.get());
+        optional.ifPresent(globalPos -> {
+            BlockPos blockPos = globalPos.pos();
+            ServerLevel serverLevel = level.getServer().getLevel(globalPos.dimension());
+            if(serverLevel == null) return;
+            PoiManager poiManager = serverLevel.getPoiManager();
+            if(poiManager.exists(blockPos, type -> true))
+                poiManager.release(blockPos);
+            DebugPackets.sendPoiTicketCountPacket(level, blockPos);
+        });
+        entity.getBrain().eraseMemory(BMMemoryModuleTypes.COGOLEM_STATIONS.get());
+    }
 }

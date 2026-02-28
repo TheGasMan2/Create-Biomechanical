@@ -1,20 +1,14 @@
 package com.happysg.biomechanical.world.entity;
 
-import com.happysg.biomechanical.content.cogolem.CogolemAI;
-import com.happysg.biomechanical.content.cogolem.CogolemAnimation;
-import com.happysg.biomechanical.content.cogolem.GolemCommand;
-import com.happysg.biomechanical.content.tuner.ITunerOverlay;
+import com.happysg.biomechanical.registry.BMAttributes;
 import com.simibubi.create.AllItems;
-import joptsimple.internal.Strings;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -28,11 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.tslat.smartbrainlib.api.SmartBrainOwner;
-import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
-import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
-import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.NonnullDefault;
@@ -44,23 +34,16 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @NonnullDefault
-public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner<Cogolem>, ITunerOverlay, OwnableEntity, VariantHolder<Cogolem.Type> {
+public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, VariantHolder<Cogolem.Type> {
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> CHARGE_LEVEL = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> CHARGE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    /**
-     * Replace it with an attribute
-     * */
-    @Deprecated
-    private static final float MAX_CHARGE_LEVEL = 100;
 
     /* INIT */
     public Cogolem(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -74,7 +57,8 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
                 .add(Attributes.FOLLOW_RANGE,32)
                 .add(Attributes.ARMOR, 10.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(BMAttributes.MAX_CHARGE, 200);
     }
 
     @Override
@@ -82,33 +66,40 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
         super.defineSynchedData(builder);
         builder.define(DATA_OWNERUUID_ID, Optional.empty());
         builder.define(DATA_TYPE_ID, 0);
-        builder.define(CHARGE_LEVEL, MAX_ENCHANTED_ARMOR_CHANCE);
-        builder.define(COMMAND, GolemCommand.STAY.ordinal());
+        builder.define(CHARGE_ID, 1f);
+    }
+
+    @Override
+    public Brain<?> getBrain() {
+        return super.getBrain();
     }
 
     /* COMMON GETTERS AND SETTERS */
     public Type getVariant() {
         return Type.values()[this.entityData.get(DATA_TYPE_ID)];
     }
-
     public void setVariant(Type variant) {
         this.entityData.set(DATA_TYPE_ID, variant.ordinal());
     }
 
     public float getChargeLevel() {
-        return this.entityData.get(CHARGE_LEVEL);
+        return this.entityData.get(CHARGE_ID);
     }
-
     public void setChargeLevel(float chargeLevel) {
-        this.entityData.set(CHARGE_LEVEL, chargeLevel);
+        this.entityData.set(CHARGE_ID, chargeLevel);
     }
-
-    public GolemCommand getCommand() {
-        return GolemCommand.values()[this.entityData.get(COMMAND)];
+    public float extractCharge(float toExtract, boolean simulate) {
+        if(toExtract < 0) return insertCharge(-toExtract, simulate); //Or we can throw an exception
+        float removed = getChargeLevel() - toExtract;
+        if(!simulate) setChargeLevel(Math.max(0, removed));
+        return removed > 0 ? 0 : -removed;
     }
-
-    public void setCommand(GolemCommand command) {
-        this.entityData.set(COMMAND, command.ordinal());
+    public float insertCharge(float toInsert, boolean simulate) {
+        if(toInsert < 0) return extractCharge(-toInsert, simulate); //Or we can throw an exception
+        float added = getChargeLevel() + toInsert;
+        double max = getAttributeValue(BMAttributes.MAX_CHARGE);
+        if(!simulate) setChargeLevel((float) Math.min(max, added));
+        return added > max ? (float)(added-max) : 0;
     }
 
     @Nullable
@@ -116,41 +107,16 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
     public UUID getOwnerUUID() {
         return this.entityData.get(DATA_OWNERUUID_ID).orElse(null);
     }
-
     public void setOwnerUUID(@Nullable UUID uuid) {
         this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(uuid));
     }
 
-    public float extractCharge(float amount) {
-        if(amount < 0) return insertCharge(-amount);
-        float charge = this.getChargeLevel();
-        if(amount > charge) {
-            setChargeLevel(0);
-            return amount - charge;
-        }
-        setChargeLevel(charge - amount);
-        return amount;
-    }
-
-    public float insertCharge(float amount) {
-        if(amount < 0) return extractCharge(-amount);
-        float charge = this.getChargeLevel();
-        if(charge + amount > MAX_CHARGE_LEVEL) {
-            setChargeLevel(MAX_CHARGE_LEVEL);
-            return charge + amount - MAX_CHARGE_LEVEL;
-        }
-        setChargeLevel(charge + amount);
-        return amount;
-    }
 
     /* NBT DATA */
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.setChargeLevel(tag.getFloat("ChargeLevel"));
-        int command = tag.getInt("Command");
-        if(command >= 0 && command < GolemCommand.values().length)
-            this.setCommand(GolemCommand.values()[command]);
+        this.setChargeLevel((float) Mth.clamp(tag.getFloat("ChargeLevel"), 0, getAttributeValue(BMAttributes.MAX_CHARGE)));
         this.setOwnerUUID(tag.hasUUID("Owner") ? tag.getUUID("Owner") : null);
         int variant = tag.getInt("Variant");
         if(variant > 0 && variant < Type.values().length)
@@ -161,7 +127,6 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putFloat("ChargeLevel", this.getChargeLevel());
-        tag.putInt("Command", this.getCommand().ordinal());
         if(this.getOwnerUUID() != null) tag.putUUID("Owner", this.getOwnerUUID());
         tag.putInt("Variant", this.getVariant().ordinal());
     }
@@ -209,7 +174,7 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
     public void tick() {
         super.tick();
         double motion = Math.abs(getDeltaMovement().x + getDeltaMovement().z)*.1;
-        extractCharge((float) motion);
+        extractCharge((float) motion, true);
     }
 
     @Override
@@ -245,31 +210,6 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
     }
 
     @Override
-    protected Brain.Provider<?> brainProvider() {
-        return new SmartBrainProvider<>(this);
-    }
-
-    @Override
-    public List<? extends ExtendedSensor<? extends Cogolem>> getSensors() {
-        return CogolemAI.getSensors();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getCoreTasks() {
-        return CogolemAI.getCoreTasks();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getIdleTasks() {
-        return CogolemAI.getIdleTasks();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getFightTasks() {
-        return CogolemAI.getFightTasks();
-    }
-
-    @Override
     public void aiStep() {
         this.updateSwingTime();
         super.aiStep();
@@ -278,32 +218,6 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        this.tickBrain(this);
-    }
-
-    /* GOOGLE */
-
-    @Override
-    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        tooltip.add(Component.literal("    Cogolem"));
-        tooltip.add(Component.literal("Health  ")
-                .append(barComponent((int) (getHealth() * 20 / getMaxHealth()))));
-        tooltip.add(Component.literal("Charge ")
-                .append(barComponent((int) (getChargeLevel() * 20/ MAX_CHARGE_LEVEL))));
-        return true;
-    }
-
-    @Deprecated
-    private MutableComponent barComponent(int level) {
-        return Component.empty()
-                .append(bars(Math.max(0, level), ChatFormatting.GREEN))
-                .append(bars(Math.max(0, 20 - level), ChatFormatting.DARK_RED));
-    }
-
-    @Deprecated
-    private MutableComponent bars(int level, ChatFormatting format) {
-        return Component.literal(Strings.repeat('|', level))
-                .withStyle(format);
     }
 
     /* VARIANT */

@@ -1,6 +1,8 @@
 package com.happysg.biomechanical;
 
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,10 @@ public class BiomechanicalConstants {
 
     public static ResourceLocation id(String path, Object... args) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format(path, args));
+    }
+
+    public static <T> DeferredRegister<T> deferred(Registry<T> registry) {
+        return DeferredRegister.create(registry, MOD_ID);
     }
 
     @FunctionalInterface

@@ -1,0 +1,29 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": false,
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "create:brass_casing"
+    },
+    "M": {
+      "item": "create:precision_mechanism"
+    },
+    "N": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "biomechanical:electron_battery"
+    }
+  },
+  "pattern": [
+    "ANNNA",
+    "MPPPM",
+    "ANNNA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "biomechanical:power_core"
+  },
+  "show_notification": false
+}

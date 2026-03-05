@@ -70,7 +70,7 @@ public class StationBlockEntity extends KineticBlockEntity {
         if (cachedCogolem.getChargeLevel() == 100) {
             // Release the cogolem if it was wandering or following and has a high charge level
             if (prevCommand == GolemCommand.FOLLOW || prevCommand == GolemCommand.WANDER)
-                cachedCogolem.setCommand(prevCommand);
+                //TODO: cachedCogolem.setCommand(prevCommand);
             prevCommand = null; // Reset the previous command after releasing
             cachedCogolem.triggerAnim("charge", "stand");
             cachedCogolem = null; // Clear the cached cogolem reference
@@ -156,7 +156,7 @@ public class StationBlockEntity extends KineticBlockEntity {
 
     public void onEntityInside(Entity entity) {
         if (entity instanceof Cogolem golem) {
-            if (golem.getChargeLevel() > 95 && golem.getCommand() != GolemCommand.STATION) {
+            /*if (golem.getChargeLevel() > 95 && golem.getCommand() != GolemCommand.STATION) {
                 // If the cogolem is already charged enough and not set to STATION, ignore it
                 return; // Ignore if the cogolem is already occupying the station
             }
@@ -168,7 +168,7 @@ public class StationBlockEntity extends KineticBlockEntity {
             cachedCogolem.setDeltaMovement(0, 0, 0); // Stop any movement of the cogolem when it enters the station
             cachedCogolem.setYBodyRot(getBlockState().getValue(HORIZONTAL_FACING).toYRot()); // Set the rotation of the cogolem to match the station
             cachedCogolem.setYRot(getBlockState().getValue(HORIZONTAL_FACING).toYRot()); // Set the rotation of the cogolem to match the station
-            cachedCogolem.triggerAnim("charge", "sit");
+            cachedCogolem.triggerAnim("charge", "sit");*/
         }
     }
 
@@ -179,7 +179,7 @@ public class StationBlockEntity extends KineticBlockEntity {
         Vec3 cogolemPosition = occupyingCogolem.position();
         // Check if the occupying cogolem is still within the station block
         double distanceSquared = cogolemPosition.distanceToSqr(getBlockPos().getBottomCenter());
-        return distanceSquared < 2.0 && occupyingCogolem.getCommand() == GolemCommand.STAY;
+        return distanceSquared < 2.0 /*&& occupyingCogolem.getCommand() == GolemCommand.STAY*/;
     }
 }
 

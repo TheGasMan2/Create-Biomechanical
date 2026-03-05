@@ -42,7 +42,7 @@ public class CogolemAI {
         );
     }
 
-    public static BrainActivityGroup<Cogolem> getCoreTasks() {
+    /*public static BrainActivityGroup<Cogolem> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
                 new FollowOwner<>().stopFollowingWithin(2).startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommand.FOLLOW && cogolemEntity.getChargeLevel() > 20),
                 new FindStation().startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommand.STATION || cogolemEntity.getChargeLevel() < 25),
@@ -79,6 +79,6 @@ public class CogolemAI {
                         .startCondition(cogolemEntity -> cogolemEntity.getChargeLevel() > 0)
                         .whenStarting(cogolemEntity -> cogolemEntity.extractCharge(5))
         );
-    }
+    }*/
 
 }

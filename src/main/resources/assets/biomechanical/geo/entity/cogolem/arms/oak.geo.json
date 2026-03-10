@@ -28,10 +28,7 @@
 				{
 					"name": "example",
 					"parent": "left_arm",
-					"pivot": [11, 31, -0.5],
-					"cubes": [
-						{"origin": [13, 22, -7.5], "size": [3, 21, 4], "uv": [2, 5]}
-					]
+					"pivot": [11, 31, -0.5]
 				}
 			]
 		}

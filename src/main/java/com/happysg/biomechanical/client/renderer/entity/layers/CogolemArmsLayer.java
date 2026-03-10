@@ -50,8 +50,8 @@ public class CogolemArmsLayer extends GeoRenderLayer<Cogolem> {
         if(optArmToRender.isEmpty()) return;
         var armToRender = optArmToRender.get();
         var color = renderer.getRenderColor(animatable, partialTick, packedLight).argbInt();
-        var vertex = bufferSource.getBuffer(renderType);
         renderType = RenderType.entityCutout(model.getTextureResource(animatable, renderer));
+        var vertex = bufferSource.getBuffer(renderType);
         renderer.renderCubesOfBone(
                 poseStack,
                 armToRender,

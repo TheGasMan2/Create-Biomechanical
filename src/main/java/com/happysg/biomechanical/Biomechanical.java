@@ -58,7 +58,7 @@ public class Biomechanical {
                         level.setBlock(biw.getPos(), Blocks.AIR.defaultBlockState(), 2);
                         level.levelEvent(2001, biw.getPos(), Block.getId(biw.getState()));
                     }
-            cogolem.moveTo(match.getBlock(0, 2, 0).getPos().getCenter(), 0, 0);
+            cogolem.moveTo(match.getBlock(1, 2, 0).getPos().getCenter(), 0, 0);
             level.addFreshEntity(cogolem);
             for(ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, cogolem.getBoundingBox().inflate(5)))
                 CriteriaTriggers.SUMMONED_ENTITY.trigger(player, cogolem);

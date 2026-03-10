@@ -17,10 +17,12 @@ public class BMBlockPatternMatch {
     public static BlockPattern getOrCreateCogolemFull() {
         if(COGOLEM == null) {
             COGOLEM = BlockPatternBuilder.start()
-                    .aisle("^", "#", "$")
+                    .aisle("~ ~", "@#@", "~$~")
                     .where('^', BlockInWorld.hasState(PUMPKIN_PREDICATE))
                     .where('#', BlockInWorld.hasState(BlockStatePredicate.forBlock(BMBlocks.POWER_CORE.get())))
                     .where('$', BlockInWorld.hasState(BlockStatePredicate.forBlock(AllBlocks.ANDESITE_ALLOY_BLOCK.get())))
+                    .where('@', BlockInWorld.hasState(BlockStatePredicate.forBlock(AllBlocks.SHAFT.get())))
+                    .where('~', biw -> biw.getState().isAir())
                     .build();
         }
         return COGOLEM;

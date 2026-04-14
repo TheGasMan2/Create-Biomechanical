@@ -1,7 +1,7 @@
 package com.happysg.biomechanical.registry;
 
 import com.happysg.biomechanical.world.entity.Cogolem;
-import com.happysg.biomechanical.content.cogolem.CogolemRenderer;
+import com.happysg.biomechanical.client.renderer.entity.CogolemRenderer;
 import com.tterrag.registrate.util.entry.EntityEntry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;

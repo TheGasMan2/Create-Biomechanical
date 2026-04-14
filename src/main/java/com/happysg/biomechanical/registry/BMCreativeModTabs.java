@@ -17,12 +17,11 @@ public class BMCreativeModTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, BiomechanicalConstants.MOD_ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATE_BIOMECHANICAL_TAB = REGISTER.register("main",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(BMBlocks.COGOLEM_HEAD))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(BMBlocks.POWER_CORE))
                     .title(Component.translatable("itemGroup.biomechanical.main"))
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(BMBlocks.STATION);
                         pOutput.accept(BMBlocks.POWER_CORE);
-                        pOutput.accept(BMBlocks.BIONIC_CASING);
                         pOutput.accept(BMBlocks.BRASS_PROJECTOR);
                         pOutput.accept(BMBlocks.ANDESITE_PROJECTOR);
                         pOutput.accept(BMItems.INCOMPLETE_ELECTRON_BATTERY);
@@ -32,7 +31,7 @@ public class BMCreativeModTabs {
                     .build());
 
 
-    public static void register(IEventBus eventBus) {
+    public static void init(IEventBus eventBus) {
         REGISTER.register(eventBus);
         REGISTRATE.addRawLang("itemGroup.biomechanical.main", "Create: Biomechanical");
     }

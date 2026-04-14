@@ -42,30 +42,30 @@ public class CogolemAI {
         );
     }
 
-    public static BrainActivityGroup<Cogolem> getCoreTasks() {
+    /*public static BrainActivityGroup<Cogolem> getCoreTasks() {
         return BrainActivityGroup.coreTasks(
-                new FollowOwner<>().stopFollowingWithin(2).startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.FOLLOW && cogolemEntity.getChargeLevel() > 20),
-                new FindStation().startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.STATION || cogolemEntity.getChargeLevel() < 25),
-                new MoveToWalkTarget<Cogolem>().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY && cogolemEntity.getChargeLevel() > 0),
-                new LookAtTarget<Cogolem>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(40, 300)).startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY)
+                new FollowOwner<>().stopFollowingWithin(2).startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommand.FOLLOW && cogolemEntity.getChargeLevel() > 20),
+                new FindStation().startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommand.STATION || cogolemEntity.getChargeLevel() < 25),
+                new MoveToWalkTarget<Cogolem>().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommand.STAY && cogolemEntity.getChargeLevel() > 0),
+                new LookAtTarget<Cogolem>().runFor(entity -> entity.getRandom().nextIntBetweenInclusive(40, 300)).startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommand.STAY)
         );
 
     }
 
     public static BrainActivityGroup<Cogolem> getIdleTasks() {
         return BrainActivityGroup.idleTasks(
-                new FirstApplicableBehaviour<Cogolem>(
+                new FirstApplicableBehaviour<>(
                         new TargetOrRetaliate<Cogolem>()
                                 .attackablePredicate(target -> target instanceof Enemy && !(target instanceof Creeper))
-                                .startCondition(golem -> golem.getChargeLevel() > 15 && golem.getCommand() == GolemCommands.WANDER),
-                        new ProtectOwner().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY),
+                                .startCondition(golem -> golem.getChargeLevel() > 15 && golem.getCommand() == GolemCommand.WANDER),
+                        new ProtectOwner().startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommand.STAY),
                         new SetPlayerLookTarget<Cogolem>()
-                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY),
+                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommand.STAY),
                         new SetRandomLookTarget<Cogolem>()
-                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommands.STAY)),
+                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() != GolemCommand.STAY)),
                 new OneRandomBehaviour<>(
                         new SetRandomWalkTarget<Cogolem>()
-                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommands.WANDER),
+                                .startCondition(cogolemEntity -> cogolemEntity.getCommand() == GolemCommand.WANDER),
                         new Idle<>().runFor(entity -> entity.getRandom().nextInt(30, 60)))
         );
     }
@@ -77,8 +77,8 @@ public class CogolemAI {
                 new AnimatableMeleeAttack<Cogolem>(2)
                         .attackInterval(e -> 30)
                         .startCondition(cogolemEntity -> cogolemEntity.getChargeLevel() > 0)
-                        .whenStarting(cogolemEntity -> cogolemEntity.takeCharge(5))
+                        .whenStarting(cogolemEntity -> cogolemEntity.extractCharge(5))
         );
-    }
+    }*/
 
 }

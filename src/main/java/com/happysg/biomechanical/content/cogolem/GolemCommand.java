@@ -1,12 +1,12 @@
 package com.happysg.biomechanical.content.cogolem;
 
-public enum GolemCommands {
+public enum GolemCommand {
     STAY,
     WANDER,
     FOLLOW,
     STATION;
 
-    public GolemCommands cycle(){
+    public GolemCommand cycle(){
         return values()[(this.ordinal() + 1) % values().length];
     }
 }

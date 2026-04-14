@@ -49,7 +49,7 @@ public class GolemTunerOverlayRenderer {
     private static final Map<Object, OutlineEntry> outlines = Outliner.getInstance().getOutlines();
 
     public static int hoverTicks = 0;
-    public static Entity lastHovered = null;
+    public static Entity lastHovered;
 
     public static void registerOverlay(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, BiomechanicalConstants.id("goggle_entity_info"), GolemTunerOverlayRenderer.ENTITY_OVERLAY);

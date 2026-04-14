@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -25,18 +24,23 @@ public class Biomechanical {
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(BiomechanicalConstants.MOD_ID)
             .defaultCreativeTab((ResourceKey<CreativeModeTab>) null);
 
-    public Biomechanical(IEventBus modEventBus, ModContainer modContainer) {
-        REGISTRATE.registerEventListeners(modEventBus);
+    public Biomechanical(IEventBus eventBus) {
+        REGISTRATE.registerEventListeners(eventBus);
         /* INIT REGISTRIES */
         BMBlocks.register();
         BMBlockEntityTypes.register();
         BMItems.register();
         BMEntityTypes.register();
         BMPartials.register();
-        BMCreativeModTabs.register(modEventBus);
+
+
+        BMCreativeModTabs.init(eventBus);
+        BMMenuTypes.init(eventBus);
+        BMAttributes.init(eventBus);
+        BMMemoryModuleTypes.init(eventBus);
 
         /* EVENTS */
-        modEventBus.addListener(GolemTunerOverlayRenderer::registerOverlay);
+        eventBus.addListener(GolemTunerOverlayRenderer::registerOverlay);
         NeoForge.EVENT_BUS.register(this);
     }
 
@@ -57,7 +61,7 @@ public class Biomechanical {
                         level.setBlock(biw.getPos(), Blocks.AIR.defaultBlockState(), 2);
                         level.levelEvent(2001, biw.getPos(), Block.getId(biw.getState()));
                     }
-            cogolem.moveTo(match.getBlock(0, 2, 0).getPos().getCenter(), 0, 0);
+            cogolem.moveTo(match.getBlock(1, 2, 0).getPos().getCenter(), 0, 0);
             level.addFreshEntity(cogolem);
             for(ServerPlayer player : level.getEntitiesOfClass(ServerPlayer.class, cogolem.getBoundingBox().inflate(5)))
                 CriteriaTriggers.SUMMONED_ENTITY.trigger(player, cogolem);

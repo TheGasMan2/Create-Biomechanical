@@ -1,5 +1,11 @@
 name: build
-on: [ pull_request, push ]
+on:
+  push:
+    branches:
+      - devtest
+  pull_request:
+    branches:
+      - devtest
 
 jobs:
   build:

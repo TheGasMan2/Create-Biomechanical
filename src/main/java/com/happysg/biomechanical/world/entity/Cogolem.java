@@ -1,95 +1,86 @@
 package com.happysg.biomechanical.world.entity;
 
-import com.happysg.biomechanical.content.cogolem.CogolemAI;
-import com.happysg.biomechanical.content.cogolem.CogolemAnimation;
-import com.happysg.biomechanical.content.cogolem.GolemCommands;
-import com.happysg.biomechanical.content.tuner.ITunerOverlay;
-import com.simibubi.create.AllBlocks;
-import joptsimple.internal.Strings;
-import net.minecraft.ChatFormatting;
+import com.happysg.biomechanical.registry.BMAttributes;
+import com.happysg.biomechanical.world.inventory.CogolemMenu;
+import com.simibubi.create.AllItems;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.util.Mth;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.tslat.smartbrainlib.api.SmartBrainOwner;
-import net.tslat.smartbrainlib.api.core.BrainActivityGroup;
-import net.tslat.smartbrainlib.api.core.SmartBrainProvider;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
-import net.tslat.smartbrainlib.api.core.sensor.ExtendedSensor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.NonnullDefault;
+import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner<Cogolem>, ITunerOverlay, OwnableEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    /**
-     * Replace it with an attribute
-     * */
-    @Deprecated
-    private static final float MAX_CHARGE_LEVEL = 100;
-
-    private static final EntityDataAccessor<Float> CHARGE_LEVEL = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
+@NonnullDefault
+public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, VariantHolder<Cogolem.Type>, MenuProvider, ContainerListener {
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> TEXTURE_STATE =
-            SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> CHARGE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
 
+    public static final int SLOT_MAIN_HAND = 0;
+    public static final int SLOT_CHEST = 1;
+    public static final int SLOT_BODY = 2;
 
+    @Nullable
+    private SimpleContainer inventory = null;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    /* INIT */
     public Cogolem(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+        createInventory();
     }
 
-    @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
-        return new SmoothGroundNavigation(this, level);
+    protected void createInventory() {
+        SimpleContainer simplecontainer = this.inventory;
+        this.inventory = new SimpleContainer(this.getInventorySize());
+        if (simplecontainer != null) {
+            simplecontainer.removeListener(this);
+            int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
+
+            for (int j = 0; j < i; j++) {
+                ItemStack itemstack = simplecontainer.getItem(j);
+                if (!itemstack.isEmpty()) {
+                    this.inventory.setItem(j, itemstack.copy());
+                }
+            }
+        }
+
+        this.inventory.addListener(this);
     }
 
-    @Override
-    protected void registerGoals() {}
-
-    @Override
-    public void tick() {
-        super.tick();
-        double motion =Math.abs(getDeltaMovement().x + getDeltaMovement().z)*.1;
-        takeCharge((float) motion);
+    public int getInventorySize() {
+        return 3;
     }
 
-    @Override
-    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-        return false;
-    }
-
-    @Override
-    protected Brain.Provider<?> brainProvider() {
-        return new SmartBrainProvider<>(this);
-    }
 
     public static AttributeSupplier.Builder createAttributes() {
         return PathfinderMob.createMobAttributes()
@@ -98,10 +89,132 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
                 .add(Attributes.FOLLOW_RANGE,32)
                 .add(Attributes.ARMOR, 10.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(BMAttributes.MAX_CHARGE, 200);
     }
 
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_OWNERUUID_ID, Optional.empty());
+        builder.define(DATA_TYPE_ID, 0);
+        builder.define(CHARGE_ID, 1f);
+    }
+
+    @Override
+    public Brain<?> getBrain() {
+        return super.getBrain();
+    }
+
+    /* COMMON GETTERS AND SETTERS */
+    public Type getVariant() {
+        return Type.values()[this.entityData.get(DATA_TYPE_ID)];
+    }
+    public void setVariant(Type variant) {
+        this.entityData.set(DATA_TYPE_ID, variant.ordinal());
+    }
+
+    public float getChargeLevel() {
+        return this.entityData.get(CHARGE_ID);
+    }
+    public void setChargeLevel(float chargeLevel) {
+        this.entityData.set(CHARGE_ID, chargeLevel);
+    }
+    public float extractCharge(float toExtract, boolean simulate) {
+        if(toExtract < 0) return insertCharge(-toExtract, simulate); //Or we can throw an exception
+        float removed = getChargeLevel() - toExtract;
+        if(!simulate) setChargeLevel(Math.max(0, removed));
+        return removed > 0 ? 0 : -removed;
+    }
+    public float insertCharge(float toInsert, boolean simulate) {
+        if(toInsert < 0) return extractCharge(-toInsert, simulate); //Or we can throw an exception
+        float added = getChargeLevel() + toInsert;
+        double max = getAttributeValue(BMAttributes.MAX_CHARGE);
+        if(!simulate) setChargeLevel((float) Math.min(max, added));
+        return added > max ? (float)(added-max) : 0;
+    }
+
+    @Nullable
+    @Override
+    public UUID getOwnerUUID() {
+        return this.entityData.get(DATA_OWNERUUID_ID).orElse(null);
+    }
+    public void setOwnerUUID(@Nullable UUID uuid) {
+        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(uuid));
+    }
+
+
+    /* NBT DATA */
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.setChargeLevel((float) Mth.clamp(tag.getFloat("ChargeLevel"), 0, getAttributeValue(BMAttributes.MAX_CHARGE)));
+        this.setOwnerUUID(tag.hasUUID("Owner") ? tag.getUUID("Owner") : null);
+        int variant = tag.getInt("Variant");
+        if(variant > 0 && variant < Type.values().length)
+            this.setVariant(Type.values()[variant]);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putFloat("ChargeLevel", this.getChargeLevel());
+        if(this.getOwnerUUID() != null) tag.putUUID("Owner", this.getOwnerUUID());
+        tag.putInt("Variant", this.getVariant().ordinal());
+    }
+
+    /* GECKO */
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    private static final RawAnimation anim = RawAnimation.begin().thenLoop("test");
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "Test", 5, this::predicate));
+    }
+    private PlayState predicate(AnimationState<GeoAnimatable> state) {
+        return state.setAndContinue(anim);
+    }
+
+    /* INTERACT */
+    @Override
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+        if(level().isClientSide) return super.interactAt(player, vec, hand);
+        var stack = player.getItemInHand(hand);
+        Type variant = Type.parse(stack);
+        if(variant != null && getVariant() != variant) {
+            setVariant(variant);
+            float pitch = 0.9F + level().random.nextFloat() * 0.2F;
+            level().playSound(
+                    null,
+                    getX(), getY(), getZ(),
+                    SoundEvents.ANVIL_LAND,
+                    SoundSource.NEUTRAL,
+                    1.0F,
+                    pitch
+            );
+            stack.consume(1, player);
+            return InteractionResult.CONSUME;
+        }
+        player.openMenu(this, buf -> buf.writeInt(getId()));
+        return InteractionResult.SUCCESS;
+
+    }
+
+    /* TICK */
+    @Override
+    public void tick() {
+        super.tick();
+        double motion = Math.abs(getDeltaMovement().x + getDeltaMovement().z)*.1;
+        extractCharge((float) motion, true);
+    }
+
+    @Override
     protected void tickDeath() {
+        super.tickDeath();
         this.deathTime++;
         if (this.deathTime >= 30 && !this.level().isClientSide() && !this.isRemoved()) {
             this.level().broadcastEntityEvent(this, (byte)60);
@@ -109,9 +222,10 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
         }
     }
 
+    /* PROPERTIES */
     @Override
-    protected float getMaxHeadRotationRelativeToBody() {
-        return super.getMaxHeadRotationRelativeToBody();
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        return false;
     }
 
     @Override
@@ -124,121 +238,10 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
         return 30;
     }
 
+    /* AI */
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        this.setChargeLevel(MAX_CHARGE_LEVEL);
-        this.setCommand(GolemCommands.WANDER);
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-    }
-
-    public float getChargeLevel() {
-        return this.entityData.get(CHARGE_LEVEL);
-    }
-
-    public void setChargeLevel(float chargeLevel) {
-        if(chargeLevel < 0)
-            return;
-        this.entityData.set(CHARGE_LEVEL, Math.min(chargeLevel, MAX_CHARGE_LEVEL));
-    }
-
-    public boolean takeCharge(float amount) {
-        if(amount < 0)
-            return false;
-        float newCharge = this.getChargeLevel() - amount;
-        if(newCharge < 0) {
-            newCharge = 0;
-        }
-        this.setChargeLevel(newCharge);
-        return true;
-    }
-
-    public GolemCommands getCommand() {
-        return GolemCommands.values()[this.entityData.get(COMMAND)];
-    }
-
-    public void setCommand(GolemCommands command) {
-        this.entityData.set(COMMAND, command.ordinal());
-    }
-
-    @Nullable
-    @Override
-    public UUID getOwnerUUID() {
-        return this.entityData.get(DATA_OWNERUUID_ID).orElse(null);
-    }
-
-    public void setOwnerUUID(@Nullable UUID uuid) {
-        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(uuid));
-    }
-
-    public void setOwner(Player player) {
-        if (player != null) {
-            this.setOwnerUUID(player.getUUID());
-        } else {
-            this.setOwnerUUID(null);
-        }
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(CHARGE_LEVEL, 0f);
-        builder.define(COMMAND, GolemCommands.STAY.ordinal());
-        builder.define(DATA_OWNERUUID_ID, Optional.empty());
-        builder.define(TEXTURE_STATE, 0);
-
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setChargeLevel(compound.getFloat("ChargeLevel"));
-        this.setCommand(GolemCommands.values()[compound.getInt("Command")]);
-        if (compound.hasUUID("OwnerUUID")) {
-            this.setOwnerUUID(compound.getUUID("OwnerUUID"));
-        } else {
-            this.setOwnerUUID(null);
-        }
-        if (compound.contains("TextureState")) {
-            setTextureState(compound.getInt("TextureState"));
-        }
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("ChargeLevel", this.getChargeLevel());
-        compound.putInt("Command", this.getCommand().ordinal());
-        compound.putBoolean("AltTexture", hasAltTexture());
-        if (this.getOwnerUUID() != null) {
-            compound.putUUID("OwnerUUID", this.getOwnerUUID());
-        }
-        compound.putInt("TextureState", getTextureState());
-    }
-
-    @Override
-    public List<? extends ExtendedSensor<? extends Cogolem>> getSensors() {
-        return CogolemAI.getSensors();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getCoreTasks() {
-        return CogolemAI.getCoreTasks();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getIdleTasks() {
-        return CogolemAI.getIdleTasks();
-    }
-
-    @Override
-    public BrainActivityGroup<? extends Cogolem> getFightTasks() {
-        return CogolemAI.getFightTasks();
-    }
-
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        CogolemAnimation.registerControllers(controllerRegistrar, this);
+    protected PathNavigation createNavigation(Level level) {
+        return new SmoothGroundNavigation(this, level);
     }
 
     @Override
@@ -249,135 +252,40 @@ public class Cogolem extends PathfinderMob implements GeoEntity, SmartBrainOwner
 
     @Override
     protected void customServerAiStep() {
-        this.tickBrain(this);
+        super.customServerAiStep();
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new CogolemMenu(containerId, playerInventory, this);
     }
 
+    public final Container getArmor() {
+        //noinspection DataFlowIssue
+        return this.inventory;
+    }
 
     @Override
-    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        tooltip.add(Component.literal("    Cogolem"));
-        tooltip.add(Component.literal("Health  ")
-                .append(barComponent((int) (getHealth() * 20 / getMaxHealth()))));
-        tooltip.add(Component.literal("Charge ")
-                .append(barComponent((int) (getChargeLevel() * 20/ MAX_CHARGE_LEVEL))));
-        return true;
-    }
-
-
-    private MutableComponent barComponent(int level) {
-        return Component.empty()
-                .append(bars(Math.max(0, level), ChatFormatting.GREEN))
-                .append(bars(Math.max(0, 20 - level), ChatFormatting.DARK_RED));
+    public void containerChanged(Container container) {
 
     }
 
-    private MutableComponent bars(int level, ChatFormatting format) {
-        return Component.literal(Strings.repeat('|', level))
-                .withStyle(format);
-    }
+    /* VARIANT */
+    public enum Type {
+        ANDESITE, ALLOYED, BRASS;
 
-    public void cycleCommand(Player player) {
-        if(level().isClientSide) {
-            return;
-        }
-        if(getOwnerUUID() != null && !getOwnerUUID().equals(player.getUUID())) {
-            return; // Only the owner can change the command
-        }
-        if(getOwnerUUID() == null) {
-            setOwner(player);
-        }
-        setCommand(getCommand().cycle());
-        if(getCommand() == GolemCommands.STAY) {
-            getNavigation().stop();
-        }
-        player.sendSystemMessage(Component.literal("Cogolem command set to: " + getCommand().name())
-                .withStyle(ChatFormatting.YELLOW));
-    }
-
-    int textureState = 0;  // Default texture (Andesite Block)
-
-    private void toggleTexture(int newTextureState) {
-        if (getTextureState() != newTextureState) {
-            setTextureState(newTextureState);
-        }
-    }
-
-    // Add this method in your CogolemEntity class
-    public boolean hasAltTexture() {
-        // Switch based on textureState to determine if alternate textures should be used
-        switch (textureState) {
-            case 1: // Andesite Alloy Block
-                return true;
-            case 2: // Brass Block
-                return true;
-            default: // Default texture (Andesite Block)
-                return false;
-        }
-    }
-
-    public int getTextureState() {
-        return this.entityData.get(TEXTURE_STATE);
-    }
-
-    public void setTextureState(int state) {
-        this.entityData.set(TEXTURE_STATE, state);
-    }
-
-    private long lastInteractionTime = 0;
-    private static final long INTERACTION_DELAY = 500; // 500 ms delay
-
-    @Override
-    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!level().isClientSide) {
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastInteractionTime < INTERACTION_DELAY) {
-                return InteractionResult.FAIL;
-            }
-
-            lastInteractionTime = currentTime;
-
-            ItemStack itemInHand = player.getItemInHand(hand);
-            int newState = -1;
-
-            if (itemInHand.is(Blocks.ANDESITE.asItem())) {
-                newState = 0;
-            } else if (itemInHand.is(AllBlocks.ANDESITE_ALLOY_BLOCK.get().asItem())) {
-                newState = 1;
-            } else if (itemInHand.is(AllBlocks.BRASS_BLOCK.get().asItem())) {
-                newState = 2;
-            }
-
-            if (newState != -1 && getTextureState() != newState) {
-                toggleTexture(newState);
-                playSwitchSoundAndFeedback(player);
-                return InteractionResult.SUCCESS;
-            }
-
-            return InteractionResult.PASS;
+        @Nullable
+        public static Type parse(ItemStack itemStack) {
+            return parse(itemStack.getItem());
         }
 
-        return super.interactAt(player, vec, hand);
-    }
-
-    private void playSwitchSoundAndFeedback(Player player) {
-        // Play a metallic sound when switching textures
-        float pitch = 0.9F + level().random.nextFloat() * 0.2F;
-        level().playSound(
-                null, // All players can hear it
-                getX(), getY(), getZ(), // Mob's position
-                SoundEvents.ANVIL_LAND, // Sound to play
-                SoundSource.NEUTRAL, // Sound category
-                1.0F, // Volume
-                pitch // Randomized pitch
-        );
-
-        // Feedback to the player
-        player.sendSystemMessage(Component.literal("Switched texture!"));
+        @Nullable
+        public static Type parse(Item item) {
+            if(item == Items.ANDESITE) return ANDESITE;
+            if(item == AllItems.BRASS_INGOT.get()) return BRASS;
+            if(item == AllItems.ANDESITE_ALLOY.get()) return ALLOYED;
+            return null;
+        }
     }
 
 }

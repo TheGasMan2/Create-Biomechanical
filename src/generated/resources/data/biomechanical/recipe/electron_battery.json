@@ -1,0 +1,80 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "tag": "c:plates/iron"
+  },
+  "loops": 3,
+  "results": [
+    {
+      "chance": 120.0,
+      "id": "biomechanical:incomplete_electron_battery"
+    },
+    {
+      "chance": 8.0,
+      "id": "create:iron_sheet"
+    },
+    {
+      "chance": 8.0,
+      "id": "create:electron_tube"
+    },
+    {
+      "chance": 5.0,
+      "id": "create:rose_quartz"
+    },
+    {
+      "chance": 3.0,
+      "id": "c:nuggets/brass"
+    },
+    {
+      "chance": 2.0,
+      "id": "create:shaft"
+    },
+    {
+      "chance": 2.0,
+      "id": "create:crushed_iron_gold"
+    },
+    {
+      "id": "minecraft:iron_ingot"
+    },
+    {
+      "id": "minecraft:compass"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "biomechanical:incomplete_electron_battery"
+        },
+        {
+          "item": "create:electron_tube"
+        }
+      ],
+      "results": [
+        {
+          "id": "biomechanical:incomplete_electron_battery"
+        }
+      ]
+    },
+    {
+      "type": "create:deploying",
+      "ingredients": [
+        {
+          "item": "biomechanical:incomplete_electron_battery"
+        },
+        {
+          "tag": "c:nuggets/brass"
+        }
+      ],
+      "results": [
+        {
+          "id": "biomechanical:incomplete_electron_battery"
+        }
+      ]
+    }
+  ],
+  "transitional_item": {
+    "id": "biomechanical:electron_battery"
+  }
+}

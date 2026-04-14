@@ -1,5 +1,6 @@
 package com.happysg.biomechanical.registry;
 
+import com.simibubi.create.AllBlocks;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -16,10 +17,12 @@ public class BMBlockPatternMatch {
     public static BlockPattern getOrCreateCogolemFull() {
         if(COGOLEM == null) {
             COGOLEM = BlockPatternBuilder.start()
-                    .aisle("^", "#", "$")
+                    .aisle("~ ~", "@#@", "~$~")
                     .where('^', BlockInWorld.hasState(PUMPKIN_PREDICATE))
                     .where('#', BlockInWorld.hasState(BlockStatePredicate.forBlock(BMBlocks.POWER_CORE.get())))
-                    .where('$', BlockInWorld.hasState(BlockStatePredicate.forBlock(Blocks.TUFF)))
+                    .where('$', BlockInWorld.hasState(BlockStatePredicate.forBlock(AllBlocks.ANDESITE_ALLOY_BLOCK.get())))
+                    .where('@', BlockInWorld.hasState(BlockStatePredicate.forBlock(AllBlocks.SHAFT.get())))
+                    .where('~', biw -> biw.getState().isAir())
                     .build();
         }
         return COGOLEM;

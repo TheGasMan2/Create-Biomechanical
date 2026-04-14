@@ -1,5 +1,6 @@
 package com.happysg.biomechanical;
 
+import com.happysg.biomechanical.registry.BMMenuTypes;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -12,6 +13,7 @@ public class BiomechanicalClient {
 
     public BiomechanicalClient(IEventBus eventBus) {
         eventBus.register(this);
+        eventBus.addListener(BMMenuTypes::registerMenuScreens);
     }
 
     @SubscribeEvent

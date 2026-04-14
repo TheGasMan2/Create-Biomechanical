@@ -1,6 +1,7 @@
 package com.happysg.biomechanical.world.entity;
 
 import com.happysg.biomechanical.registry.BMAttributes;
+import com.happysg.biomechanical.world.inventory.CogolemMenu;
 import com.simibubi.create.AllItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -9,21 +10,22 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.tslat.smartbrainlib.api.core.navigation.SmoothGroundNavigation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.NonnullDefault;
 import software.bernie.geckolib.animatable.GeoAnimatable;
@@ -38,17 +40,47 @@ import java.util.Optional;
 import java.util.UUID;
 
 @NonnullDefault
-public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, VariantHolder<Cogolem.Type> {
+public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, VariantHolder<Cogolem.Type>, MenuProvider, ContainerListener {
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNERUUID_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DATA_TYPE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> CHARGE_ID = SynchedEntityData.defineId(Cogolem.class, EntityDataSerializers.FLOAT);
 
+    public static final int SLOT_MAIN_HAND = 0;
+    public static final int SLOT_CHEST = 1;
+    public static final int SLOT_BODY = 2;
+
+    @Nullable
+    private SimpleContainer inventory = null;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     /* INIT */
     public Cogolem(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+        createInventory();
     }
+
+    protected void createInventory() {
+        SimpleContainer simplecontainer = this.inventory;
+        this.inventory = new SimpleContainer(this.getInventorySize());
+        if (simplecontainer != null) {
+            simplecontainer.removeListener(this);
+            int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
+
+            for (int j = 0; j < i; j++) {
+                ItemStack itemstack = simplecontainer.getItem(j);
+                if (!itemstack.isEmpty()) {
+                    this.inventory.setItem(j, itemstack.copy());
+                }
+            }
+        }
+
+        this.inventory.addListener(this);
+    }
+
+    public int getInventorySize() {
+        return 3;
+    }
+
 
     public static AttributeSupplier.Builder createAttributes() {
         return PathfinderMob.createMobAttributes()
@@ -153,20 +185,23 @@ public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, 
         if(level().isClientSide) return super.interactAt(player, vec, hand);
         var stack = player.getItemInHand(hand);
         Type variant = Type.parse(stack);
-        if(variant == null) return super.interactAt(player, vec, hand);
-        if(getVariant() == variant) return InteractionResult.CONSUME;
-        setVariant(variant);
-        float pitch = 0.9F + level().random.nextFloat() * 0.2F;
-        level().playSound(
-                null,
-                getX(), getY(), getZ(),
-                SoundEvents.ANVIL_LAND,
-                SoundSource.NEUTRAL,
-                1.0F,
-                pitch
-        );
-        stack.consume(1, player);
+        if(variant != null && getVariant() != variant) {
+            setVariant(variant);
+            float pitch = 0.9F + level().random.nextFloat() * 0.2F;
+            level().playSound(
+                    null,
+                    getX(), getY(), getZ(),
+                    SoundEvents.ANVIL_LAND,
+                    SoundSource.NEUTRAL,
+                    1.0F,
+                    pitch
+            );
+            stack.consume(1, player);
+            return InteractionResult.CONSUME;
+        }
+        player.openMenu(this, buf -> buf.writeInt(getId()));
         return InteractionResult.SUCCESS;
+
     }
 
     /* TICK */
@@ -205,7 +240,7 @@ public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, 
 
     /* AI */
     @Override
-    protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
+    protected PathNavigation createNavigation(Level level) {
         return new SmoothGroundNavigation(this, level);
     }
 
@@ -218,6 +253,21 @@ public class Cogolem extends PathfinderMob implements GeoEntity, OwnableEntity, 
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new CogolemMenu(containerId, playerInventory, this);
+    }
+
+    public final Container getArmor() {
+        //noinspection DataFlowIssue
+        return this.inventory;
+    }
+
+    @Override
+    public void containerChanged(Container container) {
+
     }
 
     /* VARIANT */

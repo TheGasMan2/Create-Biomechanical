@@ -31,7 +31,7 @@ public class BMCreativeModTabs {
                     .build());
 
 
-    public static void register(IEventBus eventBus) {
+    public static void init(IEventBus eventBus) {
         REGISTER.register(eventBus);
         REGISTRATE.addRawLang("itemGroup.biomechanical.main", "Create: Biomechanical");
     }

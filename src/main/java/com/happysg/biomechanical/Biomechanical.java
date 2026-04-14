@@ -32,7 +32,10 @@ public class Biomechanical {
         BMItems.register();
         BMEntityTypes.register();
         BMPartials.register();
-        BMCreativeModTabs.register(eventBus);
+
+
+        BMCreativeModTabs.init(eventBus);
+        BMMenuTypes.init(eventBus);
         BMAttributes.init(eventBus);
         BMMemoryModuleTypes.init(eventBus);
 
